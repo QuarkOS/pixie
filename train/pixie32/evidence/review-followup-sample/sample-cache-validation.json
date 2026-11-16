@@ -1,0 +1,41 @@
+{
+  "purpose": "real 200-sample loader validation with synthetic assets; no training",
+  "assets": {
+    "palette": "synthetic uniform 4096-colour RGB cube plus transparent sentinel",
+    "tokenizer": "synthetic BPE, 49408 entries, BOS49406/EOS49407"
+  },
+  "input_manifest_rows": 200,
+  "admitted_rows": 200,
+  "split_counts": {
+    "0": 180,
+    "1": 10,
+    "2": 10
+  },
+  "drops": {
+    "train_eval_caption": 0
+  },
+  "token_shape": [
+    200,
+    1024
+  ],
+  "caption_shape": [
+    200,
+    18
+  ],
+  "train_mean_weight": 0.9999998211860657,
+  "edge_rows": 28,
+  "holdout_matches": 0,
+  "style": {
+    "fill_thresholds": [
+      320,
+      720
+    ],
+    "color_thresholds": [
+      11,
+      17
+    ],
+    "color_calibration": "training-set thirds, nearest quantile",
+    "dark_rgb_sum": 90
+  },
+  "dataset_sha256": "b437d0228e8ad58c2b0e4a9521ade068d29a52ea07636747bbfe342764710379"
+}

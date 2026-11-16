@@ -1,0 +1,39 @@
+test_alpha_threshold_and_nearest_palette (test_data.DataTests.test_alpha_threshold_and_nearest_palette) ... ok
+test_array_id_manifest_must_match (test_data.DataTests.test_array_id_manifest_must_match) ... ok
+test_build_has_aligned_arrays_weights_and_disjoint_splits (test_data.DataTests.test_build_has_aligned_arrays_weights_and_disjoint_splits) ... ok
+test_caption_subject_and_tokenizer_decoded_holdouts_drop (test_data.DataTests.test_caption_subject_and_tokenizer_decoded_holdouts_drop) ... ok
+test_directional_and_text_captions_disable_flip (test_data.DataTests.test_directional_and_text_captions_disable_flip) ... ok
+test_env_defaults_explicit_flags_and_clip_trimming (test_data.DataTests.test_env_defaults_explicit_flags_and_clip_trimming) ... ok
+test_holdout_schema_and_default_files (test_data.DataTests.test_holdout_schema_and_default_files) ... ok
+test_missing_provenance_and_existing_outputs_are_refused (test_data.DataTests.test_missing_provenance_and_existing_outputs_are_refused) ... ok
+test_multiple_cells_from_one_sheet_never_cross_splits (test_data.DataTests.test_multiple_cells_from_one_sheet_never_cross_splits) ... ok
+test_quantized_dedup_and_provenance_path_alignment (test_data.DataTests.test_quantized_dedup_and_provenance_path_alignment) ... ok
+test_r1_paths_are_validated_and_sources_are_filtered (test_data.DataTests.test_r1_paths_are_validated_and_sources_are_filtered) ... ok
+test_required_frozen_holdouts (test_data.DataTests.test_required_frozen_holdouts) ... ok
+test_shuffled_ids_and_array_corruption_are_refused (test_data.DataTests.test_shuffled_ids_and_array_corruption_are_refused) ... ok
+test_environment_inputs_and_holdout_defaults (test_inputs.InputTests.test_environment_inputs_and_holdout_defaults) ... ok
+test_flags_override_environment (test_inputs.InputTests.test_flags_override_environment) ... ok
+test_full_shape_clip_hf_load_and_frozen_forward (test_inputs.InputTests.test_full_shape_clip_hf_load_and_frozen_forward) ... ok
+test_missing_environment_is_clear (test_inputs.InputTests.test_missing_environment_is_clear) ... ok
+test_resume_does_not_require_or_use_v3_checkpoint (test_inputs.InputTests.test_resume_does_not_require_or_use_v3_checkpoint) ... ok
+test_busy_selected_gpu_refuses_before_python (test_launcher.LauncherTests.test_busy_selected_gpu_refuses_before_python) ... ok
+test_existing_output_and_device_override_refused (test_launcher.LauncherTests.test_existing_output_and_device_override_refused) ... ok
+test_idle_selected_gpu_and_asset_forwarding (test_launcher.LauncherTests.test_idle_selected_gpu_and_asset_forwarding) ... ok
+test_chunked_loss_and_gradients_match_raster (test_model.ModelTests.test_chunked_loss_and_gradients_match_raster) ... ok
+test_full_shape_model_only_checkpoint_format (test_model.ModelTests.test_full_shape_model_only_checkpoint_format) ... ok
+test_patchify_roundtrip_and_slot_order (test_model.ModelTests.test_patchify_roundtrip_and_slot_order) ... ok
+test_rope_prefix_identity_and_target_coordinates (test_model.ModelTests.test_rope_prefix_identity_and_target_coordinates) ... ok
+test_sampling_cfg_and_generator (test_model.ModelTests.test_sampling_cfg_and_generator) ... ok
+test_slot_head_causality (test_model.ModelTests.test_slot_head_causality) ... ok
+test_trunk_causality_and_truncated_decode (test_model.ModelTests.test_trunk_causality_and_truncated_decode) ... ok
+test_warmstart_rejects_nonpositional_shape_mismatch (test_model.ModelTests.test_warmstart_rejects_nonpositional_shape_mismatch) ... ok
+test_warmstart_remaps_only_positions (test_model.ModelTests.test_warmstart_remaps_only_positions) ... ok
+test_changed_recipe_is_refused (test_resume.ResumeTests.test_changed_recipe_is_refused) ... ok
+test_epoch_plans_do_not_consume_training_rng (test_resume.ResumeTests.test_epoch_plans_do_not_consume_training_rng) ... ok
+test_real_training_loop_resume_matches_uninterrupted (test_resume.ResumeTests.test_real_training_loop_resume_matches_uninterrupted) ... ok
+test_wsd_warmup_plateau_and_decay (test_resume.ResumeTests.test_wsd_warmup_plateau_and_decay) ... ok
+
+----------------------------------------------------------------------
+Ran 34 tests in 12.385s
+
+OK

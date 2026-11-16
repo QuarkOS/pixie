@@ -1,0 +1,335 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#000000">
+<meta name="color-scheme" content="dark">
+<title>__TITLE__</title>
+<meta name="description" content="__DESC__">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Pixie">
+<meta property="og:title" content="__TITLE__">
+<meta property="og:description" content="__DESC__">
+<meta property="og:url" content="__URL__">
+<meta property="og:image" content="__OG__">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:type" content="image/png">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="__TITLE__">
+<meta name="twitter:description" content="__DESC__">
+<meta name="twitter:image" content="__OG__">
+<link rel="preload" href="/fonts/inter-latin.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="/chat.css?v=20261112s2">
+<style>
+  body.px-share {
+    margin: 0;
+    min-height: 100dvh;
+    background: var(--ground);
+    color: var(--text);
+    font: 400 var(--fs-body)/1.5 var(--font);
+    -webkit-font-smoothing: antialiased;
+    display: flex;
+    flex-direction: column;
+  }
+  .px-share-main {
+    flex: 1;
+    width: 100%;
+    max-width: 920px;
+    margin: 0 auto;
+    padding: 32px var(--margin) 64px;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: 24px;
+    align-items: start;
+  }
+  @media (min-width: 720px) {
+    .px-share-main {
+      padding-top: 44px;
+      grid-template-columns: minmax(320px, 440px) minmax(0, 1fr);
+      gap: 32px;
+      align-items: center;
+    }
+  }
+  .px-share-stage {
+    background: var(--surface);
+    padding: 18px;
+    clip-path: var(--notch);
+  }
+  .px-share-stage-top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    margin-bottom: 12px;
+    font-size: 12px;
+    color: var(--muted);
+  }
+  .px-share-spec {
+    font-weight: 600;
+    letter-spacing: 0.02em;
+    font-variant-numeric: tabular-nums;
+  }
+  .px-share-bg-switch {
+    display: inline-flex;
+    background: var(--raised);
+    padding: 2px;
+    gap: 2px;
+    clip-path: var(--notch-sm);
+  }
+  .px-share-bg-btn {
+    border: 0;
+    background: transparent;
+    color: var(--muted);
+    font: inherit;
+    font-size: 11px;
+    font-weight: 600;
+    padding: 4px 8px;
+    cursor: pointer;
+    clip-path: var(--notch-sm);
+    transition: background-color var(--t-fast), color var(--t-fast);
+  }
+  .px-share-bg-btn[aria-pressed="true"] {
+    background: var(--raised-3);
+    color: var(--text);
+  }
+  .px-share-frame {
+    position: relative;
+    width: 100%;
+    aspect-ratio: 1 / 1;
+    background: var(--raised);
+    display: grid;
+    place-items: center;
+    overflow: hidden;
+    clip-path: var(--notch-sm);
+  }
+  .px-share-frame.is-checker {
+    background-image: var(--checker);
+    background-size: 24px 24px;
+    background-position: 0 0;
+    background-color: var(--raised);
+  }
+  #shareSprite {
+    display: block;
+    width: 100%;
+    height: 100%;
+    max-width: 512px;
+    max-height: 512px;
+    object-fit: contain;
+    image-rendering: pixelated;
+    image-rendering: crisp-edges;
+  }
+  .px-share-info {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+  }
+  .px-share-eyebrow {
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--accent);
+  }
+  #sharePrompt {
+    margin: 0;
+    font-size: clamp(24px, 4vw, 32px);
+    font-weight: 600;
+    letter-spacing: -0.025em;
+    line-height: 1.18;
+    word-break: break-word;
+  }
+  .px-share-meta {
+    margin: 0;
+    font-size: var(--fs-ui);
+    color: var(--muted);
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+  .px-share-meta[hidden] { display: none; }
+  .px-share-tools {
+    display: grid;
+    gap: 10px;
+    margin-top: 6px;
+  }
+  .px-share-tools [data-action="edit"] {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 46px;
+    padding: 0 18px;
+    background: var(--text);
+    color: var(--ground);
+    text-decoration: none;
+    font: inherit;
+    font-size: 15px;
+    font-weight: 600;
+    clip-path: var(--notch-sm);
+    transition: background-color var(--t-fast);
+  }
+  .px-share-tools [data-action="edit"]:hover { background: #e2e2e2; }
+  .px-share-dl-lbl {
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-top: 8px;
+  }
+  .px-share-dl-row {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 8px;
+  }
+  .px-share-tools a:not([data-action="edit"]),
+  .px-share-tools button {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    min-height: 42px;
+    padding: 0 14px;
+    background: var(--raised-2);
+    color: var(--text);
+    border: 0;
+    font: inherit;
+    font-size: 13px;
+    font-weight: 600;
+    text-decoration: none;
+    cursor: pointer;
+    clip-path: var(--notch-sm);
+    transition: background-color var(--t-fast);
+  }
+  .px-share-tools a:not([data-action="edit"]):hover,
+  .px-share-tools button:hover { background: var(--raised-3); }
+  .px-share-ext {
+    font-size: 11px;
+    font-weight: 500;
+    color: var(--muted);
+  }
+  .px-share-copy-btn {
+    justify-content: center !important;
+    background: var(--surface) !important;
+    box-shadow: inset 0 0 0 1px var(--raised-2);
+  }
+  .px-share-copy-btn:hover { background: var(--raised) !important; }
+  .px-share-copy-btn.is-copied { color: var(--accent); }
+  .px-share-note {
+    margin: 4px 0 0;
+    font-size: var(--fs-small);
+    line-height: 1.5;
+    color: var(--faint);
+  }
+</style>
+</head>
+<body class="px-share">
+<svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
+  <symbol id="pxMark" viewBox="0 0 11 12" shape-rendering="crispEdges">
+    <path fill="currentColor" fill-rule="evenodd" d="M2 0h7v1h1v1h1v5h-1v1h-1v1H5v1H4v1H3v1H2V8H1V7H0V2h1V1h1zM3 2h2v2H3zM6 2h2v2H6zM3 5h2v2H3zM6 5h2v2H6z"/>
+    <rect x="6" y="2" width="2" height="2" style="fill:var(--accent, #b6dc3c)"/>
+  </symbol>
+</svg>
+
+<header class="px-header">
+  <div class="px-header-in">
+    <a class="px-brand" href="/" aria-label="Pixie sprite chat, home">
+      <svg class="px-mark" width="22" height="24" aria-hidden="true"><use href="#pxMark"/></svg>
+      <span class="px-brand-name">Pixie</span>
+      <span class="px-brand-sub">Shared sprite</span>
+    </a>
+    <nav class="px-nav" aria-label="Site">
+      <a class="px-nav-link" href="/chat">Make your own</a>
+      <a class="px-nav-link" href="/label">Rate A/B</a>
+    </nav>
+  </div>
+</header>
+
+<main class="px-share-main" id="share" data-share-id="__ID__" data-prompt="__PROMPT_ATTR__">
+  <section class="px-share-stage" aria-label="Sprite preview">
+    <div class="px-share-stage-top">
+      <span class="px-share-spec">16 × 16 px · 32× scale</span>
+      <div class="px-share-bg-switch" role="group" aria-label="Backdrop">
+        <button type="button" class="px-share-bg-btn" data-bg="dark" aria-pressed="true">Dark</button>
+        <button type="button" class="px-share-bg-btn" data-bg="checker" aria-pressed="false">Checker</button>
+      </div>
+    </div>
+    <div class="px-share-frame" id="shareFrame">
+      <img id="shareSprite" src="__IMG512__" width="512" height="512" alt="__PROMPT_ATTR__">
+    </div>
+  </section>
+
+  <section class="px-share-info" aria-labelledby="sharePrompt">
+    <span class="px-share-eyebrow">Pixie 16×16 sprite</span>
+    <h1 id="sharePrompt">__PROMPT__</h1>
+    <p id="shareMeta" class="px-share-meta" hidden></p>
+
+    <div class="px-share-tools" id="shareTools">
+      <a id="shareEdit" href="/chat?edit_share=__ID__" data-action="edit">Edit / Remix in Studio</a>
+      <span class="px-share-dl-lbl">Download PNG</span>
+      <div class="px-share-dl-row">
+        <a id="shareDownload16" href="__DL16__" download><span>16 × 16</span><span class="px-share-ext">Native</span></a>
+        <a id="shareDownload512" href="__DL512__" download><span>512 × 512</span><span class="px-share-ext">#111 bg</span></a>
+        <a id="shareDownload512t" href="__DL512T__" download><span>512 × 512</span><span class="px-share-ext">Transparent</span></a>
+      </div>
+      <button type="button" id="shareCopy" class="px-share-copy-btn" data-action="copy">Copy share link</button>
+    </div>
+
+    <p class="px-share-note">Nearest-neighbour upscaled to keep every pixel crisp. Open in Studio to edit pixels or recolour palettes.</p>
+  </section>
+</main>
+
+<script>
+(() => {
+  const frame = document.getElementById("shareFrame");
+  const spriteImg = document.getElementById("shareSprite");
+  const bgBtns = document.querySelectorAll(".px-share-bg-btn");
+  const root = document.getElementById("share");
+  const metaEl = document.getElementById("shareMeta");
+  const id = root && root.dataset.shareId;
+  const darkSrc = spriteImg ? spriteImg.getAttribute("src") : "";
+
+  bgBtns.forEach((b) => {
+    b.addEventListener("click", () => {
+      const isChecker = b.dataset.bg === "checker";
+      bgBtns.forEach((other) => other.setAttribute("aria-pressed", String(other === b)));
+      if (frame) frame.classList.toggle("is-checker", isChecker);
+      const dlT = document.getElementById("shareDownload512t");
+      if (spriteImg && id && !id.startsWith("__") && dlT) {
+        spriteImg.src = isChecker ? dlT.getAttribute("href") : darkSrc;
+      }
+    });
+  });
+
+  const btn = document.getElementById("shareCopy");
+  if (btn) {
+    btn.addEventListener("click", async () => {
+      try {
+        await navigator.clipboard.writeText(location.href);
+        btn.textContent = "Copied link";
+        btn.classList.add("is-copied");
+        setTimeout(() => { btn.textContent = "Copy share link"; btn.classList.remove("is-copied"); }, 2200);
+      } catch (e) {
+        btn.textContent = "Copy failed";
+      }
+    });
+  }
+
+  if (id && !id.startsWith("__") && metaEl) {
+    fetch("/api/share/" + encodeURIComponent(id), { cache: "no-store" })
+      .then((r) => (r.ok ? r.json() : r.text().then(() => null)))
+      .then((j) => {
+        if (!j) return;
+        const parts = [];
+        if (j.refined) parts.push("Human-refined sprite");
+        if (j.ts) parts.push("Shared " + new Date(j.ts).toLocaleDateString());
+        if (parts.length) { metaEl.textContent = parts.join(" · "); metaEl.hidden = false; }
+      })
+      .catch(() => {});
+  }
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="robots" content="noindex">
+  <title>Pixel AI — Blind test</title>
+  <link rel="stylesheet" href="/chat.css">
+  <style>
+    body.px-chat { max-width: 880px; margin: 0 auto; padding: 20px var(--margin) 40px; }
+    .bl-head { display: flex; flex-wrap: wrap; align-items: baseline; gap: 8px 16px; margin-bottom: 8px; }
+    .bl-head h1 { margin: 0; font-size: var(--fs-title); font-weight: 600; letter-spacing: -0.03em; }
+    .bl-sub { color: var(--muted); font-size: var(--fs-ui); margin: 0 0 20px; }
+    .bl-prog { color: var(--faint); font-size: var(--fs-small); }
+    .bl-prog b { color: var(--accent); font-weight: 600; }
+    .bl-prompt { font-size: 18px; font-weight: 600; margin: 0 0 16px; }
+    .bl-pair {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+      align-items: start;
+      justify-items: center;
+    }
+    @media (max-width: 560px) { .bl-pair { gap: 8px; } }
+    @media (max-width: 340px) { .bl-pair { grid-template-columns: 1fr; } }
+    .bl-card {
+      appearance: none; border: 0; padding: 10px; margin: 0;
+      background: var(--raised); color: inherit; cursor: pointer;
+      clip-path: var(--notch); text-align: left; width: 100%;
+      display: flex; flex-direction: column; align-items: center;
+    }
+    .bl-card:hover { background: var(--raised-2); }
+    .bl-card:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+    .bl-card.is-picked { outline: 2px solid var(--accent); outline-offset: 2px; background: var(--raised-2); }
+    .bl-frame {
+      width: 100%;
+      max-width: 256px;
+      aspect-ratio: 1 / 1;
+      background: var(--raised-2) var(--checker) 0 0 / 12.5% 12.5%;
+    }
+    .bl-sprite {
+      display: block;
+      width: 100%;
+      height: 100%;
+      aspect-ratio: 1 / 1;
+      object-fit: contain;
+      image-rendering: pixelated;
+    }
+    .bl-side {
+      display: flex; justify-content: space-between; align-items: center;
+      margin-top: 8px; font-size: var(--fs-small); color: var(--muted);
+      width: 100%; max-width: 256px;
+    }
+    .bl-key { font-family: var(--font); color: var(--accent); font-weight: 600; }
+    .bl-actions { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 16px; }
+    .bl-actions button { flex: 1 1 120px; min-height: 44px; }
+    .bl-keys { margin-top: 18px; color: var(--faint); font-size: var(--fs-small); line-height: 1.6; }
+    .bl-keys kbd { color: var(--text); font: 600 12px var(--font); }
+    .bl-done { padding: 28px 0; }
+    .bl-err { color: var(--negative); margin: 12px 0; }
+    .bl-start { margin-top: 16px; display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+    .bl-start input {
+      flex: 1 1 200px; min-height: 44px; border: 0; clip-path: var(--notch);
+      background: var(--raised); color: var(--text); padding: 0 14px; font: 400 15px var(--font);
+    }
+  </style>
+</head>
+<body class="px-chat">
+  <header class="bl-head">
+    <h1>Blind test</h1>
+    <div class="bl-prog" id="prog"></div>
+  </header>
+  <p class="bl-sub">Two sprites for the same prompt. Pick the better one. Model names are hidden until we unblind the results afterwards. These picks are not training votes.</p>
+
+  <section id="gate">
+    <p class="bl-sub" style="margin:0">Enter your name to start. You can refresh and continue later.</p>
+    <form class="bl-start" id="startForm">
+      <input id="name" type="text" maxlength="30" autocomplete="nickname" placeholder="Your name" required>
+      <button class="px-btn-primary" type="submit">Start</button>
+    </form>
+  </section>
+
+  <section id="round" hidden>
+    <h2 class="bl-prompt" id="prompt"></h2>
+    <div class="bl-pair">
+      <button type="button" class="bl-card" id="cardL" data-side="left">
+        <div class="bl-frame">
+          <img class="bl-sprite" id="imgL" alt="Left sprite" width="256" height="256">
+        </div>
+        <div class="bl-side"><span>Left</span><span class="bl-key">←</span></div>
+      </button>
+      <button type="button" class="bl-card" id="cardR" data-side="right">
+        <div class="bl-frame">
+          <img class="bl-sprite" id="imgR" alt="Right sprite" width="256" height="256">
+        </div>
+        <div class="bl-side"><span>Right</span><span class="bl-key">→</span></div>
+      </button>
+    </div>
+    <div class="bl-actions">
+      <button type="button" class="px-btn-quiet" id="bothGood">Both good <span class="bl-key">↑</span></button>
+      <button type="button" class="px-btn-quiet" id="bothBad">Both bad <span class="bl-key">↓</span></button>
+      <button type="button" class="px-btn-quiet" id="skip">Skip <span class="bl-key">S</span></button>
+      <button type="button" class="px-btn-quiet" id="undo">Undo <span class="bl-key">U</span></button>
+    </div>
+    <p class="bl-keys"><kbd>←</kbd> left · <kbd>→</kbd> right · <kbd>↑</kbd> both good · <kbd>↓</kbd> both bad · <kbd>S</kbd> skip · <kbd>U</kbd> or <kbd>Backspace</kbd> undo</p>
+  </section>
+
+  <section class="bl-done" id="done" hidden>
+    <h2>That's all 50.</h2>
+    <p class="bl-sub">Your picks are saved. Model names stay hidden here — I'll unblind the results after you're done.</p>
+    <div class="bl-actions"><button type="button" class="px-btn-quiet" id="undoLast">Undo last pick</button></div>
+  </section>
+  <p class="bl-err" id="err" hidden></p>
+
+  <script>
+  const $ = (id) => document.getElementById(id);
+  const state = { name: localStorage.getItem("blind50_name") || "", busy: false, i: null, n: 50 };
+
+  function showErr(m) { const e = $("err"); if (!m) { e.hidden = true; e.textContent = ""; return; } e.hidden = false; e.textContent = m; }
+
+  async function api(path, body) {
+    const r = await fetch(path, {
+      method: body ? "POST" : "GET",
+      headers: body ? { "Content-Type": "application/json" } : {},
+      body: body ? JSON.stringify(body) : undefined,
+    });
+    const t = await r.text();
+    let j = {};
+    try { j = t ? JSON.parse(t) : {}; } catch {}
+    if (!r.ok) throw new Error(j.error || ("HTTP " + r.status));
+    return j;
+  }
+
+  function render(s) {
+    state.n = s.n || 50;
+    state.i = s.finished ? null : s.i;
+    $("prog").innerHTML = s.finished ? "<b>50 / 50</b> done" : ("<b>" + (s.done || 0) + " / " + state.n + "</b> rated · this is " + ((s.i ?? 0) + 1) + " of " + state.n);
+    if (s.finished) {
+      $("gate").hidden = true; $("round").hidden = true; $("done").hidden = false;
+      return;
+    }
+    $("gate").hidden = true; $("done").hidden = true; $("round").hidden = false;
+    $("prompt").textContent = s.prompt;
+    $("imgL").src = s.left; $("imgR").src = s.right;
+    $("cardL").classList.remove("is-picked"); $("cardR").classList.remove("is-picked");
+  }
+
+  async function load() {
+    if (!state.name) return;
+    showErr("");
+    const s = await api("/api/blind/next?rater=" + encodeURIComponent(state.name));
+    render(s);
+  }
+
+  async function submit(action) {
+    if (state.busy || $("round").hidden) return;
+    state.busy = true; showErr("");
+    try {
+      if (action === "left") $("cardL").classList.add("is-picked");
+      if (action === "right") $("cardR").classList.add("is-picked");
+      const s = await api("/api/blind/submit", { rater: state.name, i: state.i, action });
+      render(s);
+    } catch (e) { showErr(e.message); }
+    state.busy = false;
+  }
+
+  async function undo() {
+    if (state.busy) return;
+    state.busy = true; showErr("");
+    try {
+      const s = await api("/api/blind/undo", { rater: state.name });
+      render(s);
+    } catch (e) { showErr(e.message); }
+    state.busy = false;
+  }
+
+  $("startForm").addEventListener("submit", (e) => {
+    e.preventDefault();
+    const n = $("name").value.trim();
+    if (n.length < 2) return showErr("Please enter a name.");
+    state.name = n; localStorage.setItem("blind50_name", n);
+    load().catch((err) => showErr(err.message));
+  });
+  $("cardL").addEventListener("click", () => submit("left"));
+  $("cardR").addEventListener("click", () => submit("right"));
+  $("bothGood").addEventListener("click", () => submit("both_good"));
+  $("bothBad").addEventListener("click", () => submit("both_bad"));
+  $("skip").addEventListener("click", () => submit("skip"));
+  $("undo").addEventListener("click", undo);
+  $("undoLast").addEventListener("click", undo);
+
+  document.addEventListener("keydown", (e) => {
+    if ($("round").hidden && $("done").hidden) return;
+    if (e.target && (e.target.tagName === "INPUT" || e.target.tagName === "TEXTAREA")) return;
+    const k = e.key;
+    if (k === "ArrowLeft") { e.preventDefault(); submit("left"); }
+    else if (k === "ArrowRight") { e.preventDefault(); submit("right"); }
+    else if (k === "ArrowUp") { e.preventDefault(); submit("both_good"); }
+    else if (k === "ArrowDown") { e.preventDefault(); submit("both_bad"); }
+    else if (k === "s" || k === "S") { e.preventDefault(); submit("skip"); }
+    else if (k === "u" || k === "U" || k === "Backspace") { e.preventDefault(); undo(); }
+  });
+
+  if (state.name) { $("name").value = state.name; load().catch((err) => showErr(err.message)); }
+  </script>
+</body>
+</html>

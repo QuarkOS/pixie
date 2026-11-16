@@ -1,0 +1,13 @@
+# Proposed Krea 2 animation-sheet dataset cache configuration.
+# Replace placeholders with a new run folder. These values are targets, not
+# measurements; run a bounded pilot before changing the recipe.
+[general]
+resolution = [512, 512]
+caption_extension = ".txt"
+batch_size = 1
+enable_bucket = false
+
+[[datasets]]
+image_directory = "/path/to/animation-sheets-2x2/train"
+cache_directory = "/path/to/animation-cache-2x2-512"
+num_repeats = 1

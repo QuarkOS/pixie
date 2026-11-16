@@ -1,0 +1,20 @@
+{
+  "_note": "All 5070 Ti settings are UNTESTED on that card (no measurements). Model/steps/LoRA = the setup measured on the 3080 Ti (1.30 sprites/s there). in_flight 3 and --flash-attn on are reviewer safe defaults (unmeasured).",
+  "size": 512,
+  "grid": 2,
+  "px": 32,
+  "steps": 5,
+  "lora": "pix32-final.safetensors",
+  "lora_mult": 1.0,
+  "in_flight": 3,
+  "first_seed": 1000,
+  "port": 17890,
+  "dashboard_port": 8765,
+  "subjects": "subjects.txt",
+  "text_encoder": "Qwen3-VL-4B-Instruct-Q4_K_M.gguf",
+  "diffusion_model": "krea2_turbo-iq4_xs.gguf",
+  "extra_server_args": "--flash-attn on",
+  "queue": "queue.jsonl",
+  "recompress_sheets": true,
+  "_queue_note": "queue.jsonl = 20,000 sheets / 80,000 cell prompts from dataset2m/gen_prompts.py --n 80000 --grid 2 --seed 20261114 (Blind-50/Eval-50/probe excluded). Remove \"queue\" to fall back to subjects.txt."
+}

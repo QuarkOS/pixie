@@ -1,0 +1,18 @@
+{
+  "source_shape_calculation": {
+    "parameters": 66424320,
+    "fp32_parameter_bytes": 265697280,
+    "state_tensor_bytes": 265697280,
+    "no_weights_or_gpu_loaded": true
+  },
+  "estimates": {
+    "model_plus_two_fp32_adam_moments_bytes": 797091840,
+    "model_snapshots_at_100k_over_12m": 120,
+    "snapshot_tensor_payload_bytes_at_100k_over_12m": 31883673600,
+    "views_12m_divided_by_r1_count_133688": 89.76123511459518,
+    "training_only_hours_at_supplied_estimate_357_img_s": 9.337068160597573,
+    "remaining_training_only_hours_from_694528_views_at_357_img_s": 8.796663554310612,
+    "seconds_per_100k_views_at_357_img_s": 280.1120448179272,
+    "scope": "arithmetic estimates; exclude checkpoint serialization, reporting, startup and phase variability; R1 ratio is not weighted train epochs"
+  }
+}

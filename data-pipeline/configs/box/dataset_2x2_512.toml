@@ -1,0 +1,11 @@
+# musubi-tuner dataset config. Fill the two directories for the local dataset.
+[general]
+resolution = [512, 512]
+caption_extension = ".txt"
+batch_size = 1
+enable_bucket = false
+
+[[datasets]]
+image_directory = "/path/to/krea-dataset/sheets_2x2_512/train"
+cache_directory = "/path/to/krea-dataset/cache/2x2_512"
+num_repeats = 1

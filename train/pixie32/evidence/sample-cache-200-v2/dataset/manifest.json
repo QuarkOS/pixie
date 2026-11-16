@@ -1,0 +1,75 @@
+{
+  "schema": "pixie32-v1",
+  "rows": 200,
+  "files": {
+    "ids.txt": "24accf3000f044696ea07ff75e08eb8e728c431d8afc3f608efa1f79f7ebe7d4",
+    "records.json": "9eda39f9d8292daae9a40fbe2f094429ca9b118a81b5f435586b5a625ec98ae2",
+    "palette.npy": "6407170bb7a82fd089b6239762b004118c4e334e71ae76094ff4a9db1dbca0d5",
+    "tokens.npy": "61a92ca5f24ae7842e8cca3b34fd931d6fd61fed8f0daaf9bf96c1b3c9d5d46b",
+    "text.npy": "085ec4e5220db77bd3daf5408a4281a2103cf02b86e7f398a03ded19835ac591",
+    "subj_text.npy": "782bbaf67ae1b1af09b2073c9b76dcd5095fcfa19ed097e6d09cdd11aee440db",
+    "subject_id.npy": "0a2351c884ea38a8a0a68f16bbc757254b090e327579cc27337d76de48c0b460",
+    "weight.npy": "6f35aab734517d171b7933f28d0a024d0de21507d81ace41b624983cd15408f8",
+    "noflip.npy": "ad838f50d2186664133d74834fe586194bf87e4523eb12fff4e4158d689abb05",
+    "split.npy": "861e94d89dccb8216ae3e1adc61781175ec22553ab516749d73f07e667f24dd8",
+    "cond.npy": "c525cdededf4a6b90921ae1eadacf56f4c5b6c49947efd401e3852344f8575ee"
+  },
+  "arrays": [
+    "tokens.npy",
+    "text.npy",
+    "subj_text.npy",
+    "subject_id.npy",
+    "weight.npy",
+    "noflip.npy",
+    "split.npy",
+    "cond.npy"
+  ],
+  "array_ids_sha256": {
+    "tokens.npy": "24accf3000f044696ea07ff75e08eb8e728c431d8afc3f608efa1f79f7ebe7d4",
+    "text.npy": "24accf3000f044696ea07ff75e08eb8e728c431d8afc3f608efa1f79f7ebe7d4",
+    "subj_text.npy": "24accf3000f044696ea07ff75e08eb8e728c431d8afc3f608efa1f79f7ebe7d4",
+    "subject_id.npy": "24accf3000f044696ea07ff75e08eb8e728c431d8afc3f608efa1f79f7ebe7d4",
+    "weight.npy": "24accf3000f044696ea07ff75e08eb8e728c431d8afc3f608efa1f79f7ebe7d4",
+    "noflip.npy": "24accf3000f044696ea07ff75e08eb8e728c431d8afc3f608efa1f79f7ebe7d4",
+    "split.npy": "24accf3000f044696ea07ff75e08eb8e728c431d8afc3f608efa1f79f7ebe7d4",
+    "cond.npy": "24accf3000f044696ea07ff75e08eb8e728c431d8afc3f608efa1f79f7ebe7d4"
+  },
+  "inputs": {
+    "palette": "6407170bb7a82fd089b6239762b004118c4e334e71ae76094ff4a9db1dbca0d5",
+    "tokenizer": "fe1c250bbdac21eb9bb1ef6c534eb2cb64275147c4ac10b130f1970dbf9dd735",
+    "r1": "2881be52270f192e6e533d5260cb85b0dc3875769a82cf938ff122604f578a7c",
+    "edge_list": "80b8bb2bfeab48d4436b6d3b7fa50988f7ea31b212372028600182ccea9a7b83",
+    "metadata": "86886498487390a6e6f102d2ad856e7259f0a9fd29ef6d2931c0156d24b45a6f",
+    "provenance": "32e9b264cdc6ce9a3f6bf5da491831e253b781d4182173e7160fa59cc7d01621"
+  },
+  "holdouts": {
+    "blind50": "30961ae141bc9d4fb3403739abf5e3f751f14b9c59d2e816417c22bf831bc125",
+    "eval50": "9ef3160c9b2757311ae4a48f21881390d2d096a54ec58b5b3a82d2595a3075a6"
+  },
+  "drops": {
+    "train_eval_caption": 0
+  },
+  "split_counts": {
+    "0": 180,
+    "1": 10,
+    "2": 10
+  },
+  "style": {
+    "fill_thresholds": [
+      320,
+      720
+    ],
+    "color_thresholds": [
+      11,
+      17
+    ],
+    "color_calibration": "training-set thirds, nearest quantile",
+    "dark_rgb_sum": 90
+  },
+  "seed": 0,
+  "sampling": {
+    "balance_alpha": 0.35,
+    "balance_cap": 6,
+    "edge_multiplier": 0.5
+  }
+}

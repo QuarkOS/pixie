@@ -1,0 +1,28 @@
+{
+  "app_urls": [
+    "http://127.0.0.1:8790"
+  ],
+  "arch": "v3",
+  "ckpt": "/path/to/pixie",
+  "ckpt_sha256": "045ee8d2dbddafb5110893a6cf5cf30bb50f2fb31e5d59b4a08dd9cf756164d4",
+  "model_key": "v3",
+  "cfg_scale": 2.0,
+  "v3_code": "/path/to/pixie",
+  "clip_pt": "/path/to/pixie",
+  "clip_tokenizer": "/path/to/pixie",
+  "palette": "/path/to/pixie",
+  "py_extra": "/path/to/pixie",
+  "device": "cuda",
+  "temperature": 0.8,
+  "top_k": 32,
+  "scale": 16,
+  "lock_port": 8795,
+  "scorer": "reward_v7",
+  "scorer_fallback": "feat_linear",
+  "n_samples": 64,
+  "n_show": 4,
+  "v7_root": "/path/to/pixie",
+  "v7_head": "/path/to/pixie",
+  "v7_device": "cuda",
+  "hold_file": "/tmp/pixel-chat-v3cond.hold"
+}

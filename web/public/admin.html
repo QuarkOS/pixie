@@ -1,0 +1,2563 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex"><title>Pixel AI — Admin</title>
+<!-- cache-bust 20261112-r3: admin redesign + live v3/archive merge -->
+<style>
+@font-face{font-family:'Inter';font-style:normal;font-weight:100 900;font-display:swap;src:url('/fonts/inter-latin-ext.woff2') format('woff2');unicode-range:U+0100-02BA,U+02BD-02C5,U+02C7-02CC,U+02CE-02D7,U+02DD-02FF,U+0304,U+0308,U+0329,U+1D00-1DBF,U+1E00-1E9F,U+1EF2-1EFF,U+2020,U+20A0-20AB,U+20AD-20C0,U+2113,U+2C60-2C7F,U+A720-A7FF}
+@font-face{font-family:'Inter';font-style:normal;font-weight:100 900;font-display:swap;src:url('/fonts/inter-latin.woff2') format('woff2');unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD}
+:root{
+  --bg:#181a1e;
+  --panel:#22252b;
+  --panel-alt:#282c34;
+  --border:#343942;
+  --border-subtle:#2d3139;
+  --fg:#eceef2;
+  --mut:#9aa2b1;
+  --acc:#7aa2ff;
+  --acc-bg:rgba(122,162,255,.12);
+  --ok:#3dd68c;
+  --ok-bg:rgba(61,214,140,.12);
+  --bad:#ff8a8a;
+  --bad-bg:rgba(255,138,138,.12);
+  --warn:#ffcf6e;
+  --warn-bg:rgba(255,207,110,.12);
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--fg);font:14px/1.5 'Inter',system-ui,-apple-system,Segoe UI,sans-serif;font-variant-numeric:tabular-nums;-webkit-font-smoothing:antialiased}
+a{color:var(--acc);text-decoration:none}
+a:hover{text-decoration:underline}
+button,select{background:#2d323b;color:var(--fg);border:1px solid #434956;border-radius:8px;padding:6px 12px;cursor:pointer;font:inherit;max-width:100%;transition:border-color .15s,background .15s}
+button:hover,select:hover{border-color:var(--acc);background:#343a45}
+button:disabled,select:disabled{opacity:.45;cursor:default}
+input{background:#15171b;color:var(--fg);border:1px solid #3a3f4b;border-radius:6px;padding:6px 10px;font:inherit}
+input:focus,select:focus,button:focus-visible{outline:2px solid var(--acc);outline-offset:1px}
+.mut{color:var(--mut)}
+.ok{color:var(--ok)}.bad{color:var(--bad)}.warn{color:var(--warn)}
+
+/* Sticky Top Header & Navigation */
+.top-shell{position:sticky;top:0;z-index:15;background:rgba(24,26,30,.95);backdrop-filter:blur(8px);border-bottom:1px solid var(--border)}
+header{max-width:1400px;margin:0 auto;display:flex;gap:10px 14px;align-items:center;padding:10px 20px;flex-wrap:wrap}
+.brand{display:flex;align-items:baseline;gap:10px;margin-right:auto}
+.brand b{font-size:16px;font-weight:700;letter-spacing:-.01em}
+.brand .gen{font-size:12px;color:var(--mut)}
+.hdr-actions{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.th-ctl{display:inline-flex;align-items:center;gap:6px;background:var(--panel);border:1px solid var(--border);border-radius:8px;padding:3px 8px 3px 10px;font-size:12.5px;color:var(--mut)}
+.th-ctl input{width:68px;padding:3px 6px;text-align:right;font-weight:600;border-radius:5px}
+button.rate{background:#234c37;border-color:#3dd68c;color:#f0fdf6;font-weight:600;padding:6px 13px}
+button.rate:hover{background:#2b5e44;border-color:#5ce0a0}
+button.chat-btn{background:#263859;border-color:#7aa2ff;color:#eef4ff;font-weight:600;padding:6px 13px}
+button.chat-btn:hover{background:#2f456e}
+.ext-link{font-size:13px;padding:5px 8px;border-radius:6px;color:var(--mut)}
+.ext-link:hover{color:var(--fg);background:var(--panel);text-decoration:none}
+
+/* Section Tabs */
+.sec-nav-wrap{border-top:1px solid var(--border-subtle);background:var(--panel)}
+.sec-nav{max-width:1400px;margin:0 auto;padding:0 20px;display:flex;gap:4px;overflow-x:auto;scrollbar-width:none}
+.sec-nav::-webkit-scrollbar{display:none}
+.sec-tab{background:transparent;border:0;border-bottom:2px solid transparent;border-radius:0;padding:10px 16px;font-size:13.5px;font-weight:600;color:var(--mut);display:inline-flex;align-items:center;gap:8px;white-space:nowrap;cursor:pointer}
+.sec-tab:hover{color:var(--fg);background:rgba(255,255,255,.03);border-color:transparent}
+.sec-tab.active{color:var(--fg);border-bottom-color:var(--acc);background:rgba(122,162,255,.07)}
+.tab-badge{font-size:11px;font-weight:600;padding:1px 7px;border-radius:99px;background:#2f343e;color:var(--mut)}
+.sec-tab.active .tab-badge{background:var(--acc-bg);color:var(--acc)}
+.dot{display:inline-block;width:7px;height:7px;border-radius:50%;background:var(--mut)}
+.dot.on{background:var(--ok);box-shadow:0 0 6px var(--ok)}
+.dot.off{background:var(--bad)}
+
+/* Main Layout & Sections */
+main{max-width:1400px;margin:0 auto;padding:18px 20px 48px}
+.sec-pane{display:none}
+.sec-pane.active{display:block}
+.sec-head{display:flex;align-items:baseline;justify-content:space-between;gap:12px;flex-wrap:wrap;margin:0 0 14px}
+.sec-head h1{font-size:19px;font-weight:700;margin:0;letter-spacing:-.01em}
+.sec-head p{margin:0;font-size:13px;color:var(--mut)}
+h2{font-size:15.5px;font-weight:650;margin:24px 0 10px;letter-spacing:-.01em;display:flex;align-items:baseline;gap:8px;flex-wrap:wrap}
+h2:first-child{margin-top:0}
+.sub-note{font-size:12.5px;color:var(--mut);margin:6px 0 12px;line-height:1.45}
+
+/* Panels & Cards */
+.panel-box{background:var(--panel);border:1px solid var(--border);border-radius:12px;padding:16px;margin-bottom:18px}
+.panel-box h2{margin-top:0}
+.cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(165px,1fr));gap:10px;margin-bottom:14px}
+.card{background:var(--panel);border:1px solid var(--border);border-radius:10px;padding:11px 14px;min-width:0}
+.panel-box .card{background:var(--bg)}
+.card .k,.card .mut{font-size:12px;color:var(--mut);margin-bottom:3px;line-height:1.3}
+.card .v{font-size:21px;font-weight:700;letter-spacing:-.02em;line-height:1.2}
+.card .sub{font-size:11.5px;color:var(--mut);margin-top:4px;line-height:1.3}
+
+/* Overview Grid */
+.ov-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px;margin-bottom:18px}
+.ov-card{background:var(--panel);border:1px solid var(--border);border-radius:12px;padding:15px 16px;display:flex;flex-direction:column;justify-content:space-between}
+.ov-card-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px}
+.ov-card-title{font-size:13px;font-weight:650;color:var(--mut);text-transform:uppercase;letter-spacing:.04em}
+.ov-jump{font-size:12px;font-weight:600;color:var(--acc);background:var(--acc-bg);border:0;padding:3px 9px;border-radius:6px;cursor:pointer}
+.ov-jump:hover{background:rgba(122,162,255,.22)}
+.ov-metrics{display:grid;grid-template-columns:repeat(2,1fr);gap:10px 14px}
+.ov-stat .lbl{font-size:12px;color:var(--mut)}
+.ov-stat .val{font-size:20px;font-weight:700;margin-top:1px}
+.ov-stat .hint{font-size:11.5px;color:var(--mut);margin-top:2px}
+
+/* Progress Bars */
+.goal-panel{background:linear-gradient(180deg,#252932 0%,var(--panel) 100%);border:1px solid var(--border);border-radius:12px;padding:16px 18px;margin-bottom:18px}
+.goal-head{display:flex;justify-content:space-between;align-items:baseline;flex-wrap:wrap;gap:8px;margin-bottom:12px}
+.goal-title{font-size:15px;font-weight:700}
+.goal-bars{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:16px}
+.goal-item{background:var(--bg);border:1px solid var(--border-subtle);border-radius:10px;padding:12px 14px}
+.goal-row{display:flex;justify-content:space-between;align-items:baseline;gap:8px;margin-bottom:6px}
+.goal-row b{font-size:13.5px}
+.goal-row .nums{font-size:13.5px;font-weight:700}
+.bar-track{height:10px;background:#2a2e36;border-radius:99px;overflow:hidden;margin-bottom:6px}
+.bar-fill{height:100%;background:linear-gradient(90deg,#3dd68c,#7aa2ff);border-radius:99px;transition:width .25s}
+.bar-fill.secondary{background:linear-gradient(90deg,#7aa2ff,#c792ea)}
+.goal-foot{font-size:12px;color:var(--mut);display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap}
+
+/* Tables */
+.scroll{max-width:100%;overflow-x:auto;-webkit-overflow-scrolling:touch;border:1px solid var(--border);border-radius:10px;background:var(--panel)}
+table{border-collapse:collapse;width:100%;background:var(--panel);font-size:12.5px}
+th,td{padding:7px 9px;text-align:left;border-bottom:1px solid var(--border-subtle);white-space:nowrap}
+th{color:var(--mut);font-weight:600;font-size:11.5px;background:#1f2228;letter-spacing:.01em}
+tr:last-child td{border-bottom:0}
+tr.click{cursor:pointer}
+tr.click:hover td{background:#2b303a}
+tr.total-row td{background:#1f2329;font-weight:650;border-top:2px solid var(--border)}
+td.n,th.n{text-align:right}
+.flag{display:inline-block;border:1px solid #555;border-radius:4px;padding:1px 6px;margin-right:4px;font-size:11px;font-weight:500}
+.flag.bad{border-color:rgba(255,138,138,.45);background:var(--bad-bg)}
+.flag.warn{border-color:rgba(255,207,110,.45);background:var(--warn-bg)}
+tr.excl td{opacity:.55}
+tr.excl td:first-child{text-decoration:line-through}
+.st{font-size:12px;padding:3px 7px;border-radius:6px}
+.st-owner{color:var(--acc)}.st-trusted{color:var(--ok)}.st-excluded{color:var(--bad)}
+.role{display:inline-block;border-radius:4px;padding:1px 6px;font-size:11px;font-weight:600;border:1px solid #555}
+.role-owner{border-color:var(--acc);color:var(--acc);background:var(--acc-bg)}
+.role-trusted,.role-auto-trusted{border-color:var(--ok);color:var(--ok);background:var(--ok-bg)}
+.role-excluded{border-color:var(--bad);color:var(--bad);background:var(--bad-bg)}
+.pill{display:inline-block;border-radius:99px;padding:1px 8px;font-size:11px;font-weight:600;border:1px solid #555}
+.pill.running,.pill.online{border-color:var(--ok);color:var(--ok);background:var(--ok-bg)}
+.pill.done,.pill.finished{border-color:var(--acc);color:var(--acc);background:var(--acc-bg)}
+.pill.stopped,.pill.stale{border-color:var(--warn);color:var(--warn);background:var(--warn-bg)}
+.pill.offline{border-color:var(--bad);color:var(--bad);background:var(--bad-bg)}
+
+/* Login Box */
+#login{max-width:380px;margin:90px auto;background:var(--panel);border:1px solid var(--border);padding:24px;border-radius:12px}
+#login input{width:100%;margin:10px 0}
+#login button{width:100%;padding:9px;font-weight:600;background:#263859;border-color:var(--acc)}
+
+/* Prompt Drill-down & Sprite Sheets */
+.rounds{display:flex;flex-wrap:wrap;gap:12px}
+.rd{background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:8px}
+.rd canvas{image-rendering:pixelated;image-rendering:crisp-edges;width:256px;height:160px;display:block;border-radius:4px}
+.drill-box{background:var(--panel);border:1px solid var(--acc);border-radius:12px;padding:16px;margin-top:14px}
+.drill-head{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:12px}
+
+/* Review Drawer Overlay */
+.legend span{margin-right:12px}
+#review{display:none;position:fixed;inset:0;background:var(--bg);overflow-y:auto;z-index:30;padding:0 0 40px;-webkit-overflow-scrolling:touch}
+.rvtop{position:sticky;top:0;background:var(--panel);padding:12px 18px;border-bottom:1px solid var(--border);z-index:2}
+.rvhead{display:flex;gap:8px;align-items:center}.rvhead b{font-size:17px}.rvhead button{margin-left:auto}
+.rvrow{margin-top:7px;display:flex;flex-wrap:wrap;gap:8px;align-items:center;font-size:13px}
+.pg{display:inline-flex;gap:6px;align-items:center}.pg button{padding:4px 10px}
+button.danger{border-color:#8a3c3c;color:#ff9e9e}
+button.danger:hover{background:#4a2222;border-color:var(--bad)}
+.rvlist{display:grid;grid-template-columns:repeat(auto-fill,minmax(290px,1fr));gap:12px;padding:14px 18px}
+.rv{background:var(--panel);border:1px solid var(--border);border-radius:10px;padding:10px}
+.rv canvas{width:100%;height:auto;image-rendering:pixelated;image-rendering:crisp-edges;display:block;border-radius:6px}
+.rv.ab canvas{max-width:340px;margin:0 auto}
+.rvp{font-weight:600;margin-bottom:6px}
+.rvm{font-size:13px;margin-top:5px}
+#review .legend{padding:10px 18px 0;margin:0;font-size:12px}
+.tabs button.on{background:#344668;border-color:var(--acc);color:#fff}
+
+/* Training Charts & Controls */
+.tr-charts{display:grid;grid-template-columns:repeat(auto-fit,minmax(320px,1fr));gap:12px;margin:12px 0}
+.tr-chart{background:var(--bg);border:1px solid var(--border-subtle);border-radius:10px;padding:10px 12px;min-width:0}
+.tr-chart canvas{width:100%;height:220px;display:block}
+#tr-sample{max-width:100%;height:auto;image-rendering:pixelated;image-rendering:crisp-edges;background:#15171b;border:1px solid var(--border);border-radius:8px;margin-top:6px;display:block}
+#tr-sample-wrap{margin:14px 0 6px}
+#tr-box{margin:0}
+.trc-ctl{display:flex;flex-wrap:wrap;gap:8px 14px;align-items:center;font-size:13px}
+.trc-ctl input[type=checkbox]{vertical-align:middle}
+.trc-quick{display:inline-flex;gap:4px;align-items:center;flex-wrap:wrap}
+.trc-quick button{padding:4px 10px;font-size:12.5px}
+.trc-leg{font-size:12px;margin-top:8px;display:flex;flex-wrap:wrap;gap:6px 14px}
+.trc-leg span{margin:0;white-space:nowrap}
+.trc-leg i{display:inline-block;width:14px;height:3px;vertical-align:middle;margin-right:5px}
+.trc-leg i.dash{background:none!important;border-top:2px dashed}
+#trh-table td,#trh-table th{padding:6px 8px}
+#trh-table{font-size:12.5px}
+#trh-table a{cursor:pointer;font-weight:600}
+#trh-table tr.sel td{background:#2c323d}
+#trh-table .sw{display:inline-block;width:10px;height:10px;border-radius:2px;margin-right:6px;vertical-align:middle}
+
+/* Filter Toolbar */
+.toolbar{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-bottom:12px}
+.toolbar input[type=search]{min-width:220px;padding:6px 10px}
+.filter-pills{display:inline-flex;gap:4px;flex-wrap:wrap}
+.filter-pills button{padding:5px 10px;font-size:12px;border-radius:99px}
+.filter-pills button.on{background:var(--acc-bg);border-color:var(--acc);color:var(--acc);font-weight:600}
+
+/* Chat Thumbnail & Flywheel Diagnostics */
+.chat-thumb{width:36px;height:36px;image-rendering:pixelated;image-rendering:crisp-edges;border-radius:4px;border:1px solid var(--border);vertical-align:middle;margin-right:6px;background:#8a8a8a;object-fit:contain}
+.chat-thumb-empty{display:inline-block;background:#15171b;border:1px dashed #2e323c}
+.rv-help{margin-top:8px;padding:7px 10px;border-radius:6px;background:#1a1d23;border:1px solid var(--border-subtle);font-size:12px;color:var(--mut);line-height:1.45}
+.rv-help b{color:var(--fg)}
+.fw-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(360px,1fr));gap:14px;margin-top:12px}
+.fw-sub{background:var(--bg);border:1px solid var(--border-subtle);border-radius:10px;padding:12px}
+.fw-sub h3{margin:0 0 8px;font-size:13.5px;font-weight:650;color:var(--fg);display:flex;justify-content:space-between;align-items:baseline;gap:8px}
+.fw-bar-row{display:grid;grid-template-columns:138px 1fr 78px;gap:8px;align-items:center;font-size:12.5px;margin:6px 0}
+.fw-bar-track{height:8px;background:#262a32;border-radius:99px;overflow:hidden}
+.fw-bar-fill{height:100%;border-radius:99px;background:linear-gradient(90deg,#7aa2ff,#3dd68c)}
+.fw-bar-fill.bad{background:linear-gradient(90deg,#ff8a8a,#ffcf6e)}
+.fw-reason{display:inline-block;padding:2px 7px;border-radius:99px;font-size:11px;font-weight:600;background:#262a33;border:1px solid var(--border);color:var(--fg)}
+.fw-qbtn{padding:4px 9px;font-size:11.5px;border-radius:6px;background:#243554;border-color:#7aa2ff;color:#eef4ff}
+.fw-qbtn:hover:not(:disabled){background:#2e446c}
+.fw-qbtn.done{background:#1f3d2e;border-color:#3dd68c;color:#9cf2c5}
+.fw-diff{display:inline-block;padding:1px 6px;border-radius:4px;font-size:11px;font-weight:600;background:rgba(61,214,140,.14);color:#3dd68c;border:1px solid rgba(61,214,140,.3)}
+.fw-wrap-prompt{max-width:240px;white-space:normal;word-break:break-word;line-height:1.3}
+
+/* Comparison Grid (#sec-grid) */
+.cg-bar{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.cg-spacer{flex:1 1 auto}
+.cg-field{display:flex;flex-direction:column;gap:5px}
+.cg-field label{font-size:12px;color:var(--mut);display:flex;justify-content:space-between;align-items:center;gap:8px}
+.cg-input,.cg-select,.cg-textarea{
+  background:#15171b;color:var(--fg);border:1px solid var(--border);
+  border-radius:6px;padding:7px 9px;font-size:13px;font-family:inherit;width:100%;box-sizing:border-box
+}
+.cg-textarea{min-height:148px;resize:vertical;line-height:1.4;font-family:ui-monospace,SFMono-Regular,Consolas,monospace;font-size:12px}
+.cg-input:focus,.cg-select:focus,.cg-textarea:focus{outline:2px solid var(--acc);outline-offset:1px}
+.cg-top-row{display:grid;grid-template-columns:2fr 1fr 1fr;gap:12px;margin-bottom:12px}
+.cg-lists-row{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px}
+.cg-cond-row{display:grid;grid-template-columns:1.6fr 1fr 1fr 1fr;gap:12px;margin-bottom:12px;align-items:end}
+.cg-swatches{display:flex;gap:2px;align-items:center;flex-wrap:wrap;margin-top:4px;min-height:12px}
+.cg-swatch{width:11px;height:11px;border-radius:2px;border:1px solid rgba(255,255,255,.18);display:inline-block}
+.cg-btn{
+  background:#2a2f3a;color:var(--fg);border:1px solid var(--border);border-radius:6px;
+  padding:7px 12px;font-size:12px;font-weight:600;cursor:pointer;display:inline-flex;align-items:center;gap:6px
+}
+.cg-btn:hover:not(:disabled){border-color:var(--acc);color:#fff}
+.cg-btn:disabled{opacity:.48;cursor:not-allowed}
+.cg-btn-primary{background:var(--acc);color:#0f1217;border-color:var(--acc)}
+.cg-btn-primary:hover:not(:disabled){background:#94b5ff;color:#0b0e13}
+.cg-btn-danger{color:var(--bad)}
+.cg-btn-sm{padding:4px 9px;font-size:11px}
+.cg-btn.active{background:var(--acc);color:#0f1217;border-color:var(--acc)}
+.cg-cost-row{
+  display:flex;gap:12px;flex-wrap:wrap;align-items:center;justify-content:space-between;
+  background:#181b21;border:1px solid var(--border);border-radius:7px;padding:9px 12px;margin-top:4px
+}
+.cg-cost-text{font-size:12px;color:var(--fg)}
+.cg-cost-text .mut{color:var(--mut);font-size:11px;margin-top:2px}
+.cg-cost-err{color:var(--bad);font-weight:600}
+.cg-progress-box{margin-top:12px;padding:10px 12px;background:#181b21;border:1px solid var(--border);border-radius:7px}
+.cg-progress-head{display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap;font-size:12px;margin-bottom:7px}
+.cg-progress-track{height:7px;background:#101216;border-radius:999px;overflow:hidden;border:1px solid #2b303a}
+.cg-progress-fill{height:100%;background:linear-gradient(90deg,var(--acc),var(--ok));width:0%;transition:width .2s ease}
+.cg-pill{display:inline-block;padding:2px 8px;border-radius:999px;font-size:11px;font-weight:600;border:1px solid var(--border);background:#252a33;color:var(--fg)}
+.cg-pill.ok{color:var(--ok);border-color:rgba(61,214,140,.4)}
+.cg-pill.run{color:var(--acc);border-color:rgba(122,162,255,.45)}
+.cg-pill.err{color:var(--bad);border-color:rgba(255,138,138,.45)}
+.cg-sheet-wrap{
+  overflow-x:auto;background:#dcdcdc;border:1px solid #aeb4be;border-radius:8px;
+  padding:14px;color:#1b1f24;--cg-zoom:3;
+  font-family:'Inter',system-ui,-apple-system,'Segoe UI',sans-serif;font-variant-numeric:tabular-nums
+}
+.cg-sheet-title{font-size:15px;font-weight:700;color:#1b1f24;margin:0 0 10px 0;display:flex;justify-content:space-between;align-items:baseline;gap:12px;flex-wrap:wrap}
+.cg-sheet-sub{font-size:11px;font-weight:500;color:#4f5866}
+.cg-table{border-collapse:separate;border-spacing:6px;margin:0}
+.cg-corner{
+  position:sticky;left:0;z-index:2;background:#dcdcdc;color:#4f5866;
+  font-size:11px;font-weight:600;text-align:left;vertical-align:bottom;padding:4px 8px 6px 4px;min-width:110px
+}
+.cg-col-hdr{
+  background:#cfd3da;border:1px solid #b9bfc9;border-radius:5px;padding:6px 8px;
+  text-align:center;vertical-align:bottom;min-width:96px
+}
+.cg-col-phrase{font-size:12px;font-weight:700;color:#1b1f24;line-height:1.25;word-break:break-word}
+.cg-train-count{font-size:11px;font-weight:500;color:#4f5866;margin-top:3px;font-family:inherit;font-variant-numeric:tabular-nums}
+.cg-train-count.na{color:#6e7785;font-style:italic}
+.cg-row-label{
+  position:sticky;left:0;z-index:1;background:#dcdcdc;color:#1b1f24;
+  font-size:12px;font-weight:700;text-align:right;vertical-align:middle;
+  padding:6px 10px 6px 4px;white-space:nowrap;border-right:1px solid #c0c6d0
+}
+.cg-cell{
+  background:#d4d4d4;border:1px solid #bfc4ce;border-radius:5px;padding:6px;
+  vertical-align:middle;text-align:center;cursor:pointer;overflow:hidden;
+  transition:border-color .12s,box-shadow .12s
+}
+.cg-cell:hover{border-color:#5b7bb8}
+.cg-cell.selected{border-color:#2b5fc9;box-shadow:0 0 0 2px rgba(43,95,201,.32)}
+.cg-cell.running{border-color:#3a74e0;box-shadow:inset 0 0 0 1px rgba(58,116,224,.35)}
+.cg-cell.error{border-color:#b43c3c;background:#e6d0d0}
+.cg-samples-row{display:inline-flex;gap:5px;align-items:center;justify-content:center;flex-wrap:nowrap;max-width:100%}
+.cg-sprite-slot{
+  display:inline-flex;align-items:center;justify-content:center;flex:0 0 auto;
+  width:calc(16px * var(--cg-zoom,3));height:calc(16px * var(--cg-zoom,3));
+  background:#c8ccd4;border-radius:3px;overflow:hidden;line-height:0
+}
+.cg-sprite-slot.ready{background:transparent}
+.cg-sprite{
+  display:block;width:100%;height:100%;max-width:100%;max-height:100%;
+  object-fit:contain;image-rendering:pixelated;image-rendering:crisp-edges
+}
+.cg-slot-dot{font-size:10px;color:#555e6d;font-family:inherit;line-height:1}
+.cg-inspector{
+  margin-top:10px;padding:9px 11px;background:#181b21;border:1px solid var(--border);border-radius:6px;
+  font-size:12px;color:var(--mut);display:flex;gap:12px;flex-wrap:wrap;align-items:center
+}
+.cg-inspector strong{color:var(--fg)}
+@media (max-width:680px){
+  .cg-top-row,.cg-lists-row,.cg-cond-row{grid-template-columns:1fr}
+  .cg-sheet-wrap{padding:8px}
+  .cg-row-label,.cg-corner{min-width:82px;max-width:112px;white-space:normal;font-size:11px;padding:4px 6px 4px 2px}
+}
+
+/* Responsive Mobile (390px) */
+@media (max-width:680px){
+  header{padding:8px 10px;gap:6px}
+  .brand{width:100%;justify-content:space-between;margin-right:0}
+  .hdr-actions{width:100%;display:grid;grid-template-columns:1fr 1fr;gap:6px}
+  .hdr-actions .th-ctl{grid-column:1 / -1;justify-content:space-between;padding:3px 8px}
+  .hdr-actions button.rate,.hdr-actions button.chat-btn{width:100%;padding:8px 10px;font-size:13px;text-align:center}
+  .sec-nav{padding:0 6px;gap:0;justify-content:space-between}
+  .sec-tab{flex:1;justify-content:center;padding:8px 4px;font-size:12.5px;gap:4px}
+  .tab-badge{display:none}
+  main{padding:12px 10px 36px}
+  .sec-head{flex-direction:column;align-items:stretch;gap:8px}
+  .trc-ctl label{max-width:100%}
+  #tr-pick{width:100%;text-overflow:ellipsis}
+  .panel-box,.goal-panel,.ov-card{padding:12px}
+  .ov-grid{grid-template-columns:1fr;gap:10px}
+  .cards{grid-template-columns:repeat(2,1fr);gap:8px}
+  .card{padding:9px 11px}
+  .card .v{font-size:18px}
+  .tr-charts{grid-template-columns:1fr}
+  .rvlist{grid-template-columns:1fr;padding:10px}
+  .rvtop{padding:10px 12px}
+  th,td{padding:6px 7px;font-size:12px}
+  .toolbar input[type=search]{width:100%;min-width:0}
+}
+</style></head><body>
+<div id="login">
+  <h2 style="margin-top:0">Pixel AI — Admin</h2>
+  <p class="mut" style="margin:0 0 8px;font-size:13px">Sign in to view live labelling, A/B preferences, chat worker status, and training telemetry.</p>
+  <form id="lf"><input id="pw" type="password" placeholder="Admin password" autocomplete="current-password"><button type="submit">Log in</button></form>
+  <div id="lerr" class="bad" style="margin-top:8px"></div>
+</div>
+
+<div id="app" style="display:none">
+<div class="top-shell">
+  <header>
+    <div class="brand">
+      <b>Pixel AI — Admin</b>
+      <span class="gen" id="gen"></span>
+    </div>
+    <div class="hdr-actions">
+      <label class="th-ctl" title="Minimum Cohen's κ agreement on reference rounds for auto-trust">
+        <span>Trust threshold (agreement κ)</span>
+        <input id="th" type="number" step="0.05" min="-1" max="1" value="0.3">
+      </label>
+      <button id="rate" class="rate" title="Open the A/B rater on this device as the owner labeller">▶ Start rating</button>
+      <button id="chat" class="chat-btn" title="Open the sprite chat on this device as the owner labeller">💬 Start chat</button>
+      <button id="reload" title="Reload all admin, training, and chat worker data">↻ Reload</button>
+      <a href="/label" target="_blank" class="ext-link">Labeller ↗</a>
+      <span id="rerr" class="bad"></span>
+    </div>
+  </header>
+  <nav class="sec-nav-wrap" aria-label="Admin sections">
+    <div class="sec-nav" role="tablist">
+      <button type="button" class="sec-tab active" data-sec="overview" role="tab" aria-selected="true">Overview</button>
+      <button type="button" class="sec-tab" data-sec="training" role="tab" aria-selected="false">Training <span class="tab-badge" id="nav-badge-tr">—</span></button>
+      <button type="button" class="sec-tab" data-sec="data" role="tab" aria-selected="false">Data <span class="tab-badge" id="nav-badge-data">—</span></button>
+      <button type="button" class="sec-tab" data-sec="labellers" role="tab" aria-selected="false">Labellers <span class="tab-badge" id="nav-badge-lab">—</span></button>
+      <button type="button" class="sec-tab" data-sec="chat" role="tab" aria-selected="false"><span class="dot" id="nav-dot-chat"></span>Chat <span class="tab-badge" id="nav-badge-chat">—</span></button>
+      <button type="button" class="sec-tab" data-sec="grid" role="tab" aria-selected="false">Grid <span class="tab-badge" id="nav-badge-grid">—</span></button>
+    </div>
+  </nav>
+</div>
+
+<main>
+  <!-- ==================== 1. OVERVIEW ==================== -->
+  <section id="sec-overview" class="sec-pane active">
+    <div class="sec-head">
+      <div>
+        <h1>Overview</h1>
+        <p>Headline live statistics across labellers, grid sheets, A/B preference rounds, sprite chat, worker queue, and model training.</p>
+      </div>
+    </div>
+
+    <div class="goal-panel" id="ov-goal"></div>
+
+    <div class="ov-grid" id="ov-Summary-grid">
+      <div class="ov-card">
+        <div class="ov-card-top">
+          <span class="ov-card-title">A/B Preference Rating</span>
+          <button type="button" class="ov-jump" data-goto="data">Open Data →</button>
+        </div>
+        <div class="ov-metrics" id="ov-ab-metrics"></div>
+      </div>
+
+      <div class="ov-card">
+        <div class="ov-card-top">
+          <span class="ov-card-title">Labellers &amp; Trust</span>
+          <button type="button" class="ov-jump" data-goto="labellers">Open Labellers →</button>
+        </div>
+        <div class="ov-metrics" id="ov-lab-metrics"></div>
+      </div>
+
+      <div class="ov-card">
+        <div class="ov-card-top">
+          <span class="ov-card-title">Grid Sprite Labelling</span>
+          <button type="button" class="ov-jump" data-goto="data">Open Data →</button>
+        </div>
+        <div class="ov-metrics" id="ov-grid-metrics"></div>
+      </div>
+
+      <div class="ov-card">
+        <div class="ov-card-top">
+          <span class="ov-card-title">Chat Worker &amp; Picks</span>
+          <button type="button" class="ov-jump" data-goto="chat">Open Chat →</button>
+        </div>
+        <div class="ov-metrics" id="ov-chat-metrics"></div>
+      </div>
+
+      <div class="ov-card" style="grid-column: 1 / -1">
+        <div class="ov-card-top">
+          <span class="ov-card-title">Live Model Training (3080 Ti)</span>
+          <button type="button" class="ov-jump" data-goto="training">Open Training →</button>
+        </div>
+        <div class="cards" id="ov-tr-metrics" style="margin-bottom:0">
+          <div class="card"><div class="mut">Run status</div><div class="v">loading…</div></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="panel-box">
+      <h2>All headline counters at a glance</h2>
+      <div class="cards" id="cards" style="margin-bottom:0"></div>
+    </div>
+  </section>
+
+  <!-- ==================== 2. TRAINING ==================== -->
+  <section id="sec-training" class="sec-pane">
+    <div class="sec-head">
+      <div>
+        <h1>Training <span class="mut" id="tr-sub" style="font-size:14px;font-weight:500">read-only</span></h1>
+        <p id="tr-note">Stats only — this never changes or loads the model. Refreshes every 60s; the pusher updates about every 5 minutes.</p>
+      </div>
+      <div class="trc-ctl">
+        <label>Show run: <select id="tr-pick"><option value="">Live run</option></select></label>
+        <span id="tr-pick-note"></span>
+      </div>
+    </div>
+
+    <div id="tr-box">
+      <div class="panel-box">
+        <h2>Run metrics &amp; loss curves</h2>
+        <div class="cards" id="tr-cards"><div class="card"><div class="mut">Run status</div><div class="v">loading…</div></div></div>
+        <div class="tr-charts">
+          <div class="tr-chart"><div class="mut" id="tr-train-cap">Train NLL</div><canvas id="tr-train" width="640" height="220"></canvas></div>
+          <div class="tr-chart"><div class="mut" id="tr-dev-cap">Dev NLL</div><canvas id="tr-dev" width="640" height="220"></canvas><div class="legend trc-leg" id="tr-dev-leg"></div></div>
+        </div>
+        <p class="mut" id="tr-ckpt" style="margin:6px 0 0;font-size:12.5px"></p>
+        <div id="tr-sample-wrap" style="display:none">
+          <div class="mut" id="tr-sample-cap" style="font-weight:600;margin-bottom:4px">Latest sample grid</div>
+          <img id="tr-sample" alt="latest training sample grid">
+        </div>
+      </div>
+
+      <div class="panel-box" id="trh-wrap">
+        <h2>Run history <span class="mut" id="trh-sub" style="font-size:12.5px;font-weight:400">all runs on the 3080 Ti, read-only</span></h2>
+        <div class="scroll"><table id="trh-table"><tr><td class="mut">loading…</td></tr></table></div>
+        <p class="sub-note" id="trh-note" style="margin-bottom:0">Tick runs to compare them below; click a run name to show it in the panel above. Dev NLL is only comparable within one split: "old dev" is the v1/v2 held-out set; v3 runs are scored on the new probe / iid / iid-restored splits. † = that run's best checkpoint rescored on the new splits (baselines.json). Lower is better. <span class="ok">Green</span> = best in column.</p>
+      </div>
+
+      <div class="panel-box" id="trc-wrap">
+        <h2>Compare &amp; overlay runs</h2>
+        <div class="trc-ctl" style="margin-bottom:10px">
+          <label>Dev split <select id="trc-split"><option value="iid">v3 iid (new dev)</option><option value="probe">v3 probe</option><option value="iidrestored">v3 iid-restored</option><option value="old">old dev (v1 / v2)</option></select></label>
+          <label>X axis <select id="trc-x"><option value="0">step</option><option value="1">images seen</option><option value="2">training hours</option></select></label>
+          <label><input type="checkbox" id="trc-base" checked> same-split baselines</label>
+          <label><input type="checkbox" id="trc-zoom" checked> zoom y</label>
+          <span class="trc-quick">Quick pick: <button type="button" data-pick="v3">v3</button> <button type="button" data-pick="v1v2">v1 + v2</button> <button type="button" data-pick="all">all</button> <button type="button" data-pick="none">none</button></span>
+        </div>
+        <div class="tr-charts">
+          <div class="tr-chart"><div class="mut" id="trc-train-cap">Train NLL</div><canvas id="trc-train" width="640" height="260"></canvas></div>
+          <div class="tr-chart"><div class="mut" id="trc-dev-cap">Dev NLL</div><canvas id="trc-dev" width="640" height="260"></canvas></div>
+        </div>
+        <div class="legend trc-leg" id="trc-leg"></div>
+        <p class="sub-note" id="trc-miss" style="margin-bottom:0"></p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ==================== 3. DATA ==================== -->
+  <section id="sec-data" class="sec-pane">
+    <div class="sec-head">
+      <div>
+        <h1>Data &amp; Model Evaluation</h1>
+        <p>Individual A/B preference rounds, goal progress, model head-to-head comparisons, per-prompt breakdown, and dataset exports.</p>
+      </div>
+    </div>
+
+    <div class="goal-panel" id="data-goal"></div>
+
+    <div class="cards" id="data-ab-cards"></div>
+
+    <div class="panel-box">
+      <h2>A/B rounds per labeller (individual rounds)</h2>
+      <p class="sub-note" style="margin-top:0">Counted from individual A/B pair answers in <code>D.ab</code> (never batches). Decisive model picks count A or B choices on head-to-head model pairs (excluding same-model hidden calibration checks). Click any labeller to inspect their picks.</p>
+      <div class="scroll"><table id="ab-labellers"></table></div>
+    </div>
+
+    <div class="panel-box">
+      <h2 id="abh">A/B preference head-to-head</h2>
+      <div class="scroll"><table id="abt"></table></div>
+      <p class="sub-note" style="margin-bottom:0">One row per labeller group; status overrides apply the same way (excluded labellers only appear in "Everyone"). Hidden calibration pairs (the owner's decisive local A/B picks, both sides the same model) are left out here and only feed the A/B agreement score.</p>
+    </div>
+
+    <div class="panel-box" id="arch-box" style="display:none">
+      <h2>Archived data (before the v3 switch, 12 Nov 2026)</h2>
+      <p class="sub-note" style="margin-top:0">Old A/B votes, chat votes and pool files were copied, not deleted. They do not count toward the new v3 pool. Export leaves the originals in place.</p>
+      <div class="cards" id="arch-cards"></div>
+      <p>Export archived: <a id="arch-ab-jsonl" href="#">A/B jsonl</a> · <a id="arch-ab-csv" href="#">A/B csv</a> · <a id="arch-chat-jsonl" href="#">chat jsonl</a> · <a id="arch-chat-csv" href="#">chat csv</a> · <a id="arch-grid-jsonl" href="#">grid jsonl</a></p>
+      <div class="scroll"><table id="arch-abt"></table></div>
+    </div>
+
+    <div class="panel-box">
+      <h2>Grid head-to-head (works-rate per model)</h2>
+      <div class="scroll"><table id="h2h"></table></div>
+      <p class="sub-note" style="margin-bottom:0">Calibration rounds are left out of web labellers' head-to-head (they are the owner's old rounds). "Owner" = the owner's import + IDs set to owner. "Trusted" = owners + IDs set to trusted + auto-trusted (status auto and either ≥3 grid reference rounds with agreement κ ≥ threshold, or ≥4 A/B calibration pairs with ≥60% agreement; and no quality flags). Excluded IDs are never trusted.</p>
+    </div>
+
+    <div class="panel-box">
+      <h2>Export dataset</h2>
+      <div class="toolbar" style="margin-bottom:6px">
+        <label>Dataset: <select id="kind"><option value="grid">Grid labels</option><option value="ab">A/B preferences</option><option value="chat">Chat picks</option><option value="flywheel">Flywheel v2 preference tuples</option></select></label>
+        <label>Labeller filter: <select id="who"><option value="trusted">Trusted only (incl. owner)</option><option value="all">Everyone</option><option value="owner">Owner only (the owner)</option></select></label>
+        <button type="button" id="exj">⬇ JSONL</button>
+        <button type="button" id="exc">⬇ CSV</button>
+      </div>
+      <p class="sub-note" style="margin:0">Per-labeller JSONL and CSV exports are also available inside each labeller's review drawer. <b>Flywheel v2</b> exports deduplicated, holdout-safe DPO/reward tuples with candidate arrays, explicit/implicit weights, and user 16×16 edit diffs.</p>
+    </div>
+
+    <div class="panel-box" id="fw-data-panel">
+      <h2>Flywheel v2 dataset readiness <span class="mut" id="fw-data-sub" style="font-size:13px;font-weight:400"></span></h2>
+      <div class="cards" id="fw-data-cards" style="margin-bottom:0">
+        <div class="card"><div class="mut">Flywheel status</div><div class="v">loading…</div></div>
+      </div>
+    </div>
+
+    <div class="panel-box">
+      <h2>Per prompt (trusted labellers, incl. owner)</h2>
+      <p class="sub-note" style="margin-top:0">Click any prompt row to drill down into the individual A/B comparison pairs and 40-sprite grid sheets for that prompt.</p>
+      <div id="drill"></div>
+      <div class="scroll"><table id="pp"></table></div>
+    </div>
+  </section>
+
+  <!-- ==================== 4. LABELLERS ==================== -->
+  <section id="sec-labellers" class="sec-pane">
+    <div class="sec-head">
+      <div>
+        <h1>Labellers</h1>
+        <p>Manage status overrides (auto, owner, trusted, excluded) and click any row to open the visual review drawer or purge labels.</p>
+      </div>
+    </div>
+
+    <div class="cards" id="lab-summary-cards"></div>
+
+    <div class="panel-box">
+      <div class="toolbar">
+        <input type="search" id="lab-search" placeholder="Filter labellers by name or ID…">
+        <div class="filter-pills" id="lab-filter">
+          <button type="button" class="on" data-lf="all">All</button>
+          <button type="button" data-lf="trusted">Trusted</button>
+          <button type="button" data-lf="ab">Has A/B</button>
+          <button type="button" data-lf="grid">Has Grid</button>
+          <button type="button" data-lf="flagged">Flagged</button>
+          <button type="button" data-lf="excluded">Excluded</button>
+        </div>
+      </div>
+      <div class="scroll"><table id="people"></table></div>
+      <p class="sub-note" style="margin-bottom:0">Status dropdown: <b>auto</b> / <b>owner</b> / <b>trusted</b> / <b>excluded</b> (saved on the server; labels are never deleted unless you click "Delete labels" inside a labeller's drawer). Agreement = Cohen's κ per sprite vs the reference (the owner's calibration rounds + any pool round an owner labelled). Click any row to inspect their individual A/B and Grid answers.</p>
+    </div>
+  </section>
+
+  <!-- ==================== 5. CHAT ==================== -->
+  <section id="sec-chat" class="sec-pane">
+    <div class="sec-head">
+      <div>
+        <h1>Sprite Chat &amp; Worker Queue</h1>
+        <p>Live GPU worker status from <code>/api/chat/info</code> and recent interactive generation picks from <code>D.chat</code>.</p>
+      </div>
+    </div>
+
+    <div class="panel-box">
+      <h2>Live chat worker &amp; queue status</h2>
+      <div class="cards" id="chat-info-cards" style="margin-bottom:0">
+        <div class="card"><div class="mut">Worker status</div><div class="v">loading…</div></div>
+      </div>
+    </div>
+
+    <div class="panel-box">
+      <div style="display:flex;justify-content:space-between;align-items:baseline;flex-wrap:wrap;gap:10px;margin-bottom:10px">
+        <h2 style="margin:0">Recent chat picks <span class="mut" id="chat-sub" style="font-size:13px;font-weight:400"></span></h2>
+        <div class="toolbar" style="margin:0">
+          <input type="search" id="chat-search" placeholder="Filter by prompt, labeller, or model…">
+          <label style="font-size:12.5px;color:var(--mut)">Show:
+            <select id="chat-limit">
+              <option value="50">Latest 50</option>
+              <option value="100">Latest 100</option>
+              <option value="9999">All picks</option>
+            </select>
+          </label>
+        </div>
+      </div>
+      <div class="cards" id="chat-summary-cards"></div>
+      <div class="scroll"><table id="chat-table"></table></div>
+    </div>
+
+    <div class="panel-box" id="fw-chat-panel">
+      <div style="display:flex;justify-content:space-between;align-items:baseline;flex-wrap:wrap;gap:10px;margin-bottom:10px">
+        <h2 style="margin:0">Training Data Flywheel v2 <span class="mut" id="fw-sub" style="font-size:13px;font-weight:400">Loading diagnostics…</span></h2>
+        <div class="toolbar" style="margin:0">
+          <button type="button" id="fw-refresh">Refresh flywheel</button>
+          <a href="/api/admin/export?kind=flywheel&fmt=jsonl" style="font-size:12.5px;padding:6px 10px;border:1px solid var(--border);border-radius:8px;background:var(--panel-2)">⬇ Export Flywheel JSONL</a>
+        </div>
+      </div>
+      <div class="cards" id="fw-summary-cards"></div>
+      <div class="fw-grid">
+        <div class="fw-sub">
+          <h3><span>"None are good" failure reasons</span><span class="mut" id="fw-none-total" style="font-weight:400;font-size:12px"></span></h3>
+          <div id="fw-none-reasons" class="mut" style="font-size:12.5px">No tagged "None" votes yet.</div>
+        </div>
+        <div class="fw-sub">
+          <h3><span>Reward-rank discrepancy (Top 4 vs 5–20)</span><span class="mut" id="fw-rank-rate" style="font-weight:400;font-size:12px"></span></h3>
+          <div id="fw-rank-stats" class="mut" style="font-size:12.5px;margin-bottom:8px"></div>
+          <div class="scroll"><table id="fw-rank-table"></table></div>
+        </div>
+      </div>
+      <div style="margin-top:14px">
+        <h2 style="font-size:14px;margin:0 0 8px">High-reward "None" false positives <span class="mut" id="fw-fp-sub" style="font-size:12px;font-weight:400"></span></h2>
+        <div class="scroll"><table id="fw-fp-table"></table></div>
+      </div>
+      <div class="fw-grid" style="margin-top:14px">
+        <div class="fw-sub">
+          <h3><span>Failing prompts (highest "None" rate)</span><span class="mut" style="font-weight:400;font-size:12px">Holdout-safe queue for A/B</span></h3>
+          <div class="scroll"><table id="fw-failing-table"></table></div>
+        </div>
+        <div class="fw-sub">
+          <h3><span>Recent 16×16 user edits &amp; recolours</span><span class="mut" id="fw-edits-sub" style="font-weight:400;font-size:12px"></span></h3>
+          <div class="scroll"><table id="fw-edits-table"></table></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══ SECTION: COMPARISON GRID ════════════════════════════════════ -->
+  <section id="sec-grid" class="sec-pane" aria-label="Comparison grid">
+    <div class="card">
+      <div class="cg-bar" style="margin-bottom:10px">
+        <h2 style="margin:0">Comparison Grid</h2>
+        <span class="pill" style="font-size:11px;color:var(--mut)">Sequential · max 1 job in flight (yields to live chat)</span>
+        <span class="cg-spacer"></span>
+        <div class="cg-bar">
+          <label for="cg-history" style="font-size:12px;color:var(--mut)">Recent runs:</label>
+          <select id="cg-history" class="cg-select" style="width:auto;min-width:190px;max-width:260px">
+            <option value="">— Select saved grid —</option>
+          </select>
+          <button type="button" id="cg-history-refresh" class="cg-btn cg-btn-sm">Refresh</button>
+        </div>
+      </div>
+
+      <div class="cg-bar" style="padding:8px 10px;background:#181b21;border:1px solid var(--border);border-radius:7px;margin-bottom:12px">
+        <label for="cg-preset-select" style="font-size:12px;color:var(--mut)">Presets (localStorage):</label>
+        <select id="cg-preset-select" class="cg-select" style="width:auto;min-width:170px">
+          <option value="">— Select preset —</option>
+        </select>
+        <button type="button" id="cg-preset-load" class="cg-btn cg-btn-sm">Load</button>
+        <input type="text" id="cg-preset-name" class="cg-input" placeholder="Preset name…" style="width:155px">
+        <button type="button" id="cg-preset-save" class="cg-btn cg-btn-sm">Save Preset</button>
+        <button type="button" id="cg-preset-delete" class="cg-btn cg-btn-sm cg-btn-danger">Delete</button>
+        <span class="cg-spacer"></span>
+        <button type="button" id="cg-preset-starter" class="cg-btn cg-btn-sm">Load Starter (9×5)</button>
+      </div>
+
+      <div class="cg-top-row">
+        <div class="cg-field">
+          <label for="cg-title"><span>Title</span><span style="font-size:11px">Shown on grid &amp; PNG export</span></label>
+          <input type="text" id="cg-title" class="cg-input" maxlength="120" placeholder="e.g. Wizard Hat &amp; Accessories">
+        </div>
+        <div class="cg-field">
+          <label for="cg-samples"><span>Samples per cell</span><span style="font-size:11px">1–8 (default 3)</span></label>
+          <input type="number" id="cg-samples" class="cg-input" min="1" max="8" step="1" value="3">
+        </div>
+        <div class="cg-field">
+          <label for="cg-seed"><span>Seed (optional)</span><span style="font-size:11px">Integer for reproducibility</span></label>
+          <input type="number" id="cg-seed" class="cg-input" step="1" placeholder="blank = random">
+        </div>
+      </div>
+
+      <div class="cg-lists-row">
+        <div class="cg-field">
+          <label for="cg-subjects"><span>Subjects (rows, one per line)</span><span id="cg-subj-count">0 rows</span></label>
+          <textarea id="cg-subjects" class="cg-textarea" spellcheck="false" placeholder="One subject per line, e.g.&#10;lamb&#10;desert dragon"></textarea>
+        </div>
+        <div class="cg-field">
+          <label for="cg-phrases"><span>Variant phrases (cols, one per line; <code>plain</code> = subject alone)</span><span id="cg-phr-count">0 cols</span></label>
+          <textarea id="cg-phrases" class="cg-textarea" spellcheck="false" placeholder="plain&#10;with a wizard hat&#10;wearing a space helmet"></textarea>
+        </div>
+      </div>
+
+      <div class="cg-cond-row">
+        <div class="cg-field">
+          <label for="cg-palette"><span>Palette cond (optional)</span><span style="font-size:11px">From /api/chat/info</span></label>
+          <select id="cg-palette" class="cg-select">
+            <option value="auto">auto (model chooses)</option>
+          </select>
+          <div id="cg-palette-swatches" class="cg-swatches" aria-hidden="true"></div>
+        </div>
+        <div class="cg-field">
+          <label for="cg-style-fill"><span>Style: fill</span></label>
+          <select id="cg-style-fill" class="cg-select"><option value="any">any</option></select>
+        </div>
+        <div class="cg-field">
+          <label for="cg-style-outline"><span>Style: outline</span></label>
+          <select id="cg-style-outline" class="cg-select"><option value="any">any</option></select>
+        </div>
+        <div class="cg-field">
+          <label for="cg-style-colours"><span>Style: colours</span></label>
+          <select id="cg-style-colours" class="cg-select"><option value="any">any</option></select>
+        </div>
+      </div>
+
+      <div class="cg-cost-row">
+        <div id="cg-cost-box" class="cg-cost-text">0 cells · 0 jobs</div>
+        <div class="cg-bar">
+          <button type="button" id="cg-generate" class="cg-btn cg-btn-primary">Generate Grid</button>
+          <button type="button" id="cg-export-png" class="cg-btn" disabled>Export PNG (~1024px)</button>
+        </div>
+      </div>
+
+      <div id="cg-progress-wrap" class="cg-progress-box" style="display:none">
+        <div class="cg-progress-head">
+          <div class="cg-bar">
+            <span id="cg-progress-pill" class="cg-pill run">Queued</span>
+            <span id="cg-progress-text">Waiting…</span>
+          </div>
+          <span id="cg-progress-id" style="font-family:monospace;font-size:11px;color:var(--mut)"></span>
+        </div>
+        <div class="cg-progress-track">
+          <div id="cg-progress-bar" class="cg-progress-fill"></div>
+        </div>
+      </div>
+      <div id="cg-status-msg" style="margin-top:8px;font-size:12px;color:var(--mut)"></div>
+    </div>
+
+    <div id="cg-result-card" class="card" style="display:none">
+      <div class="cg-bar" style="margin-bottom:10px">
+        <h2 style="margin:0" id="cg-result-heading">Rendered Grid</h2>
+        <span id="cg-result-meta" class="pill" style="font-size:11px;color:var(--mut)"></span>
+        <span class="cg-spacer"></span>
+        <div class="cg-bar">
+          <span style="font-size:12px;color:var(--mut)">Scale:</span>
+          <button type="button" class="cg-btn cg-btn-sm cg-zoom-btn" data-zoom="2">2×</button>
+          <button type="button" class="cg-btn cg-btn-sm cg-zoom-btn active" data-zoom="3">3×</button>
+          <button type="button" class="cg-btn cg-btn-sm cg-zoom-btn" data-zoom="4">4×</button>
+          <button type="button" id="cg-export-png-2" class="cg-btn cg-btn-sm">⬇ Export PNG</button>
+        </div>
+      </div>
+
+      <div id="cg-sheet-wrap" class="cg-sheet-wrap">
+        <div class="cg-sheet-title">
+          <span id="cg-sheet-title-text">Comparison Grid</span>
+          <span id="cg-sheet-sub" class="cg-sheet-sub"></span>
+        </div>
+        <div id="cg-grid-mount"></div>
+      </div>
+
+      <div id="cg-inspector" class="cg-inspector">
+        <span>Click any cell in the grid to inspect its full prompt, chat job ID, seed, and sample ranks.</span>
+      </div>
+    </div>
+  </section>
+</main>
+
+<div id="review"></div>
+</div>
+
+<script type="module">
+async function startAsOwner(b,dest){
+ const er=document.getElementById('rerr'); b.disabled=true; er.textContent='';
+ try{
+  const r=await fetch('/api/admin/rate',{method:'POST',credentials:'same-origin',headers:{'Content-Type':'application/json'},body:'{}'});
+  const j=await r.json().catch(()=>({}));
+  if(!r.ok) throw new Error(j.error||('HTTP '+r.status));
+  try{ const L=localStorage; L.setItem('pxl_token',j.token); L.setItem('pxl_name',j.name); L.setItem('pxl_lid',j.labeler_id); L.setItem('pxl_abdone',String(j.done||0)); L.setItem('pxl_done','0'); L.setItem('pxl_mode','ab'); L.removeItem('pxl_pending'); }
+  catch(e){ throw new Error('this browser blocks local storage, rating needs it to keep you signed in'); }
+  location.href=dest+(dest.includes('?')?'&':'?')+'v=20261112r3';
+ }catch(e){ er.textContent=' '+e.message; b.disabled=false; }
+}
+document.getElementById('rate').onclick=()=>startAsOwner(document.getElementById('rate'),'/');
+document.getElementById('chat').onclick=()=>startAsOwner(document.getElementById('chat'),'/chat');
+
+import { labellerStats, headToHead, abHeadToHead, dedupe } from '/analysis.js';
+const $=id=>document.getElementById(id);
+let D=null, CHAT_INFO=null, LAST_S=[];
+let labFilter='all', selectedPrompt=null;
+
+const pct=(x)=>x===null||x===undefined||!isFinite(x)?'—':(x*100).toFixed(1)+'%';
+const f2=(x)=>x===null||x===undefined||!isFinite(x)?'—':x.toFixed(2);
+const esc=(s)=>String(s??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+
+// ---------- Tab navigation with URL hash persistence ----------
+const VALID_SECS=['overview','training','data','labellers','chat','grid'];
+let curSec='overview';
+function setSection(sec, updateHash=true){
+  const target=VALID_SECS.includes(sec)?sec:'overview';
+  curSec=target;
+  document.querySelectorAll('.sec-tab').forEach(b=>{
+    const on=b.dataset.sec===target;
+    b.classList.toggle('active',on);
+    b.setAttribute('aria-selected',on?'true':'false');
+  });
+  document.querySelectorAll('.sec-pane').forEach(p=>{
+    p.classList.toggle('active',p.id==='sec-'+target);
+  });
+  if(updateHash){
+    const want='#'+target;
+    if(location.hash!==want) history.replaceState(null,'',want);
+  }
+  if(target==='training' && (SNAP || H)){
+    renderTop(); renderCompare();
+  }
+}
+function syncHash(){
+  const h=(location.hash||'').replace(/^#/,'').trim().toLowerCase();
+  setSection(VALID_SECS.includes(h)?h:'overview', !VALID_SECS.includes(h));
+  window.scrollTo({top:0,behavior:'instant'});
+}
+document.querySelectorAll('.sec-tab').forEach(b=>b.onclick=()=>{ setSection(b.dataset.sec,true); window.scrollTo({top:0,behavior:'instant'}); });
+document.querySelectorAll('[data-goto]').forEach(b=>b.onclick=()=>{ setSection(b.dataset.goto,true); window.scrollTo({top:0,behavior:'instant'}); });
+window.addEventListener('hashchange',()=>syncHash());
+syncHash();
+
+async function load(){
+ const r=await fetch('/api/admin/data',{credentials:'same-origin'});
+ if(r.status===401){ $('app').style.display='none'; $('login').style.display='block'; return; }
+ const j=await r.json(); if(j.error){ alert(j.error); return; }
+ D=j; $('login').style.display='none'; $('app').style.display='block'; render();
+}
+function ckOrder(obj){ const pref=D.ck_order||[]; return Object.keys(obj).sort((a,b)=>(pref.indexOf(a)+99*(pref.indexOf(a)<0))-(pref.indexOf(b)+99*(pref.indexOf(b)<0))); }
+
+// Compute individual A/B statistics from D.ab (deduplicated per labeller+pair, never batches)
+function computeAbStats(S){
+  const byLid=new Map(S.map(s=>[s.lid,s]));
+  const seen=new Set();
+  const dedup=[];
+  for(const l of [...(D.ab||[])].sort((a,b)=>String(a.ts).localeCompare(String(b.ts)))){
+    const k=l.lid+'|'+l.pair_id;
+    if(seen.has(k)) continue;
+    seen.add(k);
+    const pr=(D.pairs||{})[l.pair_id];
+    if(!pr) continue;
+    dedup.push({l,pr,s:byLid.get(l.lid)});
+  }
+  let allRounds=0, trustedRounds=0, trustedPoolRounds=0, trustedCalRounds=0;
+  let trustedDecisivePool=0, trustedDecisiveAll=0;
+  let trustedTiesPool=0, trustedBothGoodPool=0, trustedBothBadPool=0;
+  let trustedTiesAll=0, trustedBothGoodAll=0, trustedBothBadAll=0;
+  const trustedPromptsAll=new Set(), trustedPromptsPool=new Set(), trustedPromptsDecisive=new Set();
+  const perLab=new Map();
+
+  for(const {l,pr,s} of dedup){
+    allRounds++;
+    const isCal=pr.kind==='abcal';
+    const isDec=l.choice==='A'||l.choice==='B';
+    const isBG=l.choice==='both_good';
+    const isBB=l.choice==='both_bad';
+    const prompt=pr.prompt||l.prompt||'';
+    const trusted=!!(s&&s.trusted);
+
+    let rec=perLab.get(l.lid);
+    if(!rec){
+      rec={lid:l.lid,name:s?.name||l.name||l.lid,s,rounds:0,poolRounds:0,calRounds:0,decPool:0,decAll:0,A:0,B:0,bgPool:0,bbPool:0,bgAll:0,bbAll:0,prompts:new Set()};
+      perLab.set(l.lid,rec);
+    }
+    rec.rounds++;
+    if(l.choice==='A') rec.A++;
+    if(l.choice==='B') rec.B++;
+    if(isDec) rec.decAll++;
+    if(isBG) rec.bgAll++;
+    if(isBB) rec.bbAll++;
+    if(prompt) rec.prompts.add(prompt);
+    if(isCal){
+      rec.calRounds++;
+    } else {
+      rec.poolRounds++;
+      if(isDec) rec.decPool++;
+      if(isBG) rec.bgPool++;
+      if(isBB) rec.bbPool++;
+    }
+
+    if(trusted){
+      trustedRounds++;
+      if(isDec) trustedDecisiveAll++;
+      if(isBG) trustedBothGoodAll++;
+      if(isBB) trustedBothBadAll++;
+      if(isBG||isBB) trustedTiesAll++;
+      if(prompt) trustedPromptsAll.add(prompt);
+      if(isCal){
+        trustedCalRounds++;
+      } else {
+        trustedPoolRounds++;
+        if(isDec){
+          trustedDecisivePool++;
+          if(prompt) trustedPromptsDecisive.add(prompt);
+        }
+        if(isBG) trustedBothGoodPool++;
+        if(isBB) trustedBothBadPool++;
+        if(isBG||isBB) trustedTiesPool++;
+        if(prompt) trustedPromptsPool.add(prompt);
+      }
+    }
+  }
+  const labRows=[...perLab.values()].sort((a,b)=>b.rounds-a.rounds);
+  return {
+    allRounds, trustedRounds, trustedPoolRounds, trustedCalRounds,
+    trustedDecisivePool, trustedDecisiveAll,
+    trustedTiesPool, trustedBothGoodPool, trustedBothBadPool,
+    trustedTiesAll, trustedBothGoodAll, trustedBothBadAll,
+    promptsCovered: trustedPromptsAll.size,
+    promptsDecisive: trustedPromptsDecisive.size,
+    labRows
+  };
+}
+
+function renderGoalHtml(ab){
+  const decGoal=3000, promptGoal=250;
+  const decPct=Math.min(100,(ab.trustedDecisivePool/decGoal)*100);
+  const prPct=Math.min(100,(ab.promptsCovered/promptGoal)*100);
+  const decRem=Math.max(0,decGoal-ab.trustedDecisivePool);
+  const prRem=Math.max(0,promptGoal-ab.promptsCovered);
+  const topLab=ab.labRows[0];
+  return `
+    <div class="goal-head">
+      <div class="goal-title">A/B Rating Goal Progress <span class="mut" style="font-weight:400;font-size:13px">(trusted labellers only, owner included)</span></div>
+      <div class="mut" style="font-size:12.5px">Target: <b>3,000 decisive picks</b> across <b>at least 250 distinct prompts</b></div>
+    </div>
+    <div class="goal-bars">
+      <div class="goal-item">
+        <div class="goal-row">
+          <b>Decisive A/B picks (A or B on model comparisons)</b>
+          <span class="nums ok">${ab.trustedDecisivePool.toLocaleString('en-GB')} / ${decGoal.toLocaleString('en-GB')} (${decPct.toFixed(1)}%)</span>
+        </div>
+        <div class="bar-track"><div class="bar-fill" style="width:${decPct.toFixed(1)}%"></div></div>
+        <div class="goal-foot">
+          <span>${decRem.toLocaleString('en-GB')} decisive picks remaining</span>
+          <span>${ab.trustedDecisiveAll.toLocaleString('en-GB')} incl. ${ab.trustedCalRounds} hidden checks · ${ab.trustedRounds.toLocaleString('en-GB')} trusted rounds</span>
+        </div>
+      </div>
+      <div class="goal-item">
+        <div class="goal-row">
+          <b>Distinct prompts covered</b>
+          <span class="nums" style="color:var(--acc)">${ab.promptsCovered.toLocaleString('en-GB')} / ${promptGoal.toLocaleString('en-GB')} (${prPct.toFixed(1)}%)</span>
+        </div>
+        <div class="bar-track"><div class="bar-fill secondary" style="width:${prPct.toFixed(1)}%"></div></div>
+        <div class="goal-foot">
+          <span>${prRem.toLocaleString('en-GB')} prompts remaining to reach 250</span>
+          <span>${topLab?`Top contributor: ${esc(topLab.name)} (${topLab.rounds.toLocaleString('en-GB')} rounds)`:''}</span>
+        </div>
+      </div>
+    </div>`;
+}
+
+function render(){
+ const th=Number($('th').value)||0;
+ const S=labellerStats(D,th,3,D.overrides||{});
+ LAST_S=S;
+ const web=dedupe(D.labels).filter(l=>l.lid!=='owner');
+ const people=S.filter(s=>s.lid!=='owner');
+ const usedRounds=new Set(web.map(l=>l.round_id));
+ const poolN=Object.values(D.rounds).filter(r=>r.kind==='pool').length, calN=Object.values(D.rounds).filter(r=>r.kind==='cal').length;
+ const ownerRounds=S.find(s=>s.lid==='owner')?.rounds||0;
+ const ab=computeAbStats(S);
+ const chatArr=D.chat||[];
+ const chatChosen=chatArr.filter(c=>!c.none_good).length;
+ const chatNone=chatArr.filter(c=>c.none_good).length;
+
+ $('gen').textContent='loaded '+new Date(D.generated).toLocaleString();
+
+ // Update navigation badges
+ $('nav-badge-data').textContent=ab.trustedRounds.toLocaleString('en-GB')+' A/B';
+ $('nav-badge-lab').textContent=people.filter(s=>s.trusted).length+' / '+people.length;
+ $('nav-badge-chat').textContent=chatArr.length.toLocaleString('en-GB');
+
+ // Goal banners in Overview & Data
+ const goalHtml=renderGoalHtml(ab);
+ $('ov-goal').innerHTML=goalHtml;
+ $('data-goal').innerHTML=goalHtml;
+
+ // Overview categorised summary metrics
+ const topLab=ab.labRows[0];
+ $('ov-ab-metrics').innerHTML=[
+   ['Trusted A/B rounds (individual)', ab.trustedRounds.toLocaleString('en-GB'), `${ab.trustedPoolRounds.toLocaleString('en-GB')} model pairs + ${ab.trustedCalRounds} checks`],
+   ['Decisive picks (A or B)', ab.trustedDecisivePool.toLocaleString('en-GB'), `${pct(ab.trustedPoolRounds?ab.trustedDecisivePool/ab.trustedPoolRounds:0)} of model pairs (${ab.trustedDecisiveAll.toLocaleString('en-GB')} w/ checks)`],
+   ['Ties (both good / both bad)', ab.trustedTiesPool.toLocaleString('en-GB'), `${ab.trustedBothGoodPool} both good · ${ab.trustedBothBadPool} both bad (${ab.trustedTiesAll} w/ checks)`],
+   ['Distinct prompts / Top labeller', `${ab.promptsCovered} prompts`, topLab?`${esc(topLab.name)}: ${topLab.rounds.toLocaleString('en-GB')} rounds`:'—']
+ ].map(([l,v,h])=>`<div class="ov-stat"><div class="lbl">${l}</div><div class="val">${v}</div><div class="hint">${h}</div></div>`).join('');
+
+ $('ov-lab-metrics').innerHTML=[
+   ['Web labellers', people.length.toLocaleString('en-GB'), `+ 1 imported owner (the owner)`],
+   ['Trusted labellers', people.filter(s=>s.trusted&&!s.owner).length.toLocaleString('en-GB'), `${S.filter(s=>s.trusted).length} total incl. owner`],
+   ['Owner IDs (web)', people.filter(s=>s.owner).length.toLocaleString('en-GB'), `Threshold κ ≥ ${th.toFixed(2)}`],
+   ['Excluded labellers', people.filter(s=>s.excluded).length.toLocaleString('en-GB'), `Filtered from trusted stats`]
+ ].map(([l,v,h])=>`<div class="ov-stat"><div class="lbl">${l}</div><div class="val">${v}</div><div class="hint">${h}</div></div>`).join('');
+
+ $('ov-grid-metrics').innerHTML=[
+   ['Web grid labels (rounds)', web.length.toLocaleString('en-GB'), `40 sprites per round`],
+   ['Unique rounds covered', `${usedRounds.size} / ${poolN+calN}`, `${pct(poolN+calN?usedRounds.size/(poolN+calN):0)} of pool + calibration`],
+   ['Pool / calibration sheets', `${poolN} / ${calN}`, `Available sprite sheets`],
+   ['the owner imported rounds', ownerRounds.toLocaleString('en-GB'), `Reference calibration baseline`]
+ ].map(([l,v,h])=>`<div class="ov-stat"><div class="lbl">${l}</div><div class="val">${v}</div><div class="hint">${h}</div></div>`).join('');
+
+ renderChatOverviewCard();
+
+ // Plain-word headline cards (#cards kept for compatibility)
+ const lp=D.live_pool||{};
+ const abLive=(D.ab||[]).length;
+ const livePrompts=new Set((D.ab||[]).map(l=> (D.pairs[l.pair_id]||{}).prompt).filter(Boolean)).size;
+ $('cards').innerHTML=[
+   ['Web labellers',people.length],
+   ['Owner IDs (web)',people.filter(s=>s.owner).length],
+   ['Trusted labellers (excl. owner)',people.filter(s=>s.trusted&&!s.owner).length],
+   ['Excluded labellers',people.filter(s=>s.excluded).length],
+   ['v3 pool', (lp.key||'—')+' · '+(lp.pairs||0)+' pairs'],
+   ['v3 prompts labelled', livePrompts+' / '+(lp.prompts||0)],
+   ['v3 A/B answers', abLive+' / '+(lp.pairs||0)],
+   ['chat picks (since v3)',chatArr.length],
+   ['Grid labels (individual rounds)',web.length.toLocaleString('en-GB')],
+   ['A/B rounds (individual)',abLive.toLocaleString('en-GB')],
+   ['Decisive A/B picks (trusted)',ab.trustedDecisivePool.toLocaleString('en-GB')],
+   ['Distinct A/B prompts',ab.promptsCovered],
+   ['Chat picks (individual)',chatArr.length.toLocaleString('en-GB')],
+   ['Grid sheets covered',usedRounds.size+' / '+(poolN+calN)],
+   ['Pool sprite sheets',poolN],
+   ['Calibration sprite sheets',calN],
+   ['the owner imported rounds',ownerRounds]
+ ].map(([k,v])=>`<div class="card"><div class="mut">${k}</div><div class="v">${v}</div></div>`).join('');
+
+ // Data section headline cards
+ $('data-ab-cards').innerHTML=[
+   ['v3 pool', (lp.key||'—')+' · '+(lp.pairs||0)+' pairs', `${livePrompts} / ${lp.prompts||0} prompts labelled · ${abLive} / ${lp.pairs||0} answers`],
+   ['Trusted A/B rounds (individual)', ab.trustedRounds.toLocaleString('en-GB'), `${ab.trustedPoolRounds.toLocaleString('en-GB')} model pairs · ${ab.trustedCalRounds} hidden checks`],
+   ['Decisive picks (A or B)', ab.trustedDecisivePool.toLocaleString('en-GB'), `${pct(ab.trustedPoolRounds?ab.trustedDecisivePool/ab.trustedPoolRounds:0)} of model pairs · ${ab.trustedDecisiveAll.toLocaleString('en-GB')} incl. checks`],
+   ['Ties ("both good" + "both bad")', ab.trustedTiesPool.toLocaleString('en-GB'), `${ab.trustedBothGoodPool} both good · ${ab.trustedBothBadPool} both bad (${ab.trustedTiesAll} incl. checks)`],
+   ['Distinct prompts covered', `${ab.promptsCovered} / 250`, `${ab.promptsDecisive} prompts with decisive picks`],
+   ['Top A/B labeller', topLab?`${esc(topLab.name)} (${topLab.rounds.toLocaleString('en-GB')})`:'—', topLab?`${topLab.decPool.toLocaleString('en-GB')} decisive model picks`:''],
+   ['Chat picks collected', chatArr.length.toLocaleString('en-GB'), `${chatChosen} sprite chosen · ${chatNone} none good`],
+   ['Grid rounds labelled (web)', web.length.toLocaleString('en-GB'), `${usedRounds.size} / ${poolN+calN} sheets + ${ownerRounds} imported`]
+ ].map(([k,v,sub])=>`<div class="card"><div class="mut">${k}</div><div class="v">${v}</div>${sub?`<div class="sub">${sub}</div>`:''}</div>`).join('');
+
+ // Data section: Per-labeller A/B rounds breakdown table
+ $('ab-labellers').innerHTML=
+   `<tr>
+     <th>Labeller</th>
+     <th>Trust status</th>
+     <th class="n">A/B rounds (individual)</th>
+     <th class="n">Model pair rounds</th>
+     <th class="n">Decisive picks (model pairs)</th>
+     <th class="n">All A / B picks (incl. checks)</th>
+     <th class="n">Ties: Both good</th>
+     <th class="n">Ties: Both bad</th>
+     <th class="n">Total ties</th>
+     <th class="n">Distinct prompts</th>
+     <th class="n">Hidden check agreement</th>
+     <th class="n">Median time</th>
+   </tr>`+
+   ab.labRows.map(r=>{
+     const s=r.s||{};
+     const decRate=r.poolRounds?pct(r.decPool/r.poolRounds):'—';
+     const calStr=s.ab_cal?`${pct(s.ab_agreement)} <span class="mut">(${s.ab_cal} checks)</span>`:'—';
+     return `<tr class="click${s.excluded?' excl':''}" data-ablid="${esc(r.lid)}">
+       <td><b>${esc(r.name)}</b> <span class="mut" style="font-size:11px">${esc(r.lid)}</span></td>
+       <td><span class="role role-${s.role||'auto'}">${esc(s.role||'auto')}</span></td>
+       <td class="n"><b>${r.rounds.toLocaleString('en-GB')}</b></td>
+       <td class="n">${r.poolRounds.toLocaleString('en-GB')} <span class="mut">(+${r.calRounds} cal)</span></td>
+       <td class="n"><b class="ok">${r.decPool.toLocaleString('en-GB')}</b> <span class="mut">(${decRate})</span></td>
+       <td class="n">${r.decAll.toLocaleString('en-GB')} <span class="mut">(A: ${r.A} · B: ${r.B})</span></td>
+       <td class="n">${r.bgPool} <span class="mut">(${r.bgAll} all)</span></td>
+       <td class="n">${r.bbPool} <span class="mut">(${r.bbAll} all)</span></td>
+       <td class="n">${r.bgPool+r.bbPool} <span class="mut">(${r.bgAll+r.bbAll} all)</span></td>
+       <td class="n">${r.prompts.size}</td>
+       <td class="n ${s.ab_agreement>=0.6?'ok':s.ab_agreement!==null&&s.ab_agreement<0.4?'bad':''}">${calStr}</td>
+       <td class="n">${s.ab_median_ms?(s.ab_median_ms/1000).toFixed(1)+'s':'—'}</td>
+     </tr>`;
+   }).join('')+
+   `<tr class="total-row">
+     <td>Trusted total (incl. owner)</td>
+     <td><span class="role role-trusted">${ab.labRows.filter(r=>r.s?.trusted).length} trusted</span></td>
+     <td class="n">${ab.trustedRounds.toLocaleString('en-GB')}</td>
+     <td class="n">${ab.trustedPoolRounds.toLocaleString('en-GB')} <span class="mut">(+${ab.trustedCalRounds} cal)</span></td>
+     <td class="n ok">${ab.trustedDecisivePool.toLocaleString('en-GB')} <span class="mut">(${pct(ab.trustedPoolRounds?ab.trustedDecisivePool/ab.trustedPoolRounds:0)})</span></td>
+     <td class="n">${ab.trustedDecisiveAll.toLocaleString('en-GB')}</td>
+     <td class="n">${ab.trustedBothGoodPool} <span class="mut">(${ab.trustedBothGoodAll} all)</span></td>
+     <td class="n">${ab.trustedBothBadPool} <span class="mut">(${ab.trustedBothBadAll} all)</span></td>
+     <td class="n">${ab.trustedTiesPool.toLocaleString('en-GB')} <span class="mut">(${ab.trustedTiesAll} all)</span></td>
+     <td class="n">${ab.promptsCovered}</td>
+     <td class="n">—</td>
+     <td class="n">—</td>
+   </tr>`;
+ document.querySelectorAll('#ab-labellers tr.click').forEach(tr=>tr.onclick=()=>openReview(tr.dataset.ablid,S,'ab'));
+
+ // Grid head-to-head table
+ const groups=[['Everyone (incl. excluded)',()=>true],['Everyone except excluded',s=>!s.excluded],['Owner only (the owner import + owner IDs)',s=>s.owner],['the owner import only',s=>s.lid==='owner'],['Trusted (incl. owner)',s=>s.trusted],['Trusted, not owner',s=>s.trusted&&!s.owner]];
+ const H2H=groups.map(([n,f])=>[n,headToHead(S,f)]);
+ const cks=ckOrder(Object.assign({},...H2H.map(([,h])=>h.overall)));
+ $('h2h').innerHTML='<tr><th>Labeller group</th>'+cks.map(c=>`<th class="n">${esc(c)} works / total (%)</th>`).join('')+`<th class="n">${esc(D.compare[0])} ÷ ${esc(D.compare[1])} ratio</th></tr>`+H2H.map(([n,h])=>{
+  const o=h.overall, r=(c)=>o[c]&&o[c].t?o[c].w/o[c].t:null, ra=r(D.compare[0]), rb=r(D.compare[1]);
+  return `<tr><td>${n}</td>`+cks.map(c=>`<td class="n">${o[c]?`${o[c].w}/${o[c].t} (${pct(o[c].w/o[c].t)})`:'—'}</td>`).join('')+`<td class="n">${ra!==null&&rb?f2(ra/rb)+'×':'—'}</td></tr>`;}).join('');
+
+ // Labellers section summary cards & table
+ $('lab-summary-cards').innerHTML=[
+   ['Total labellers (incl. the owner)', S.length],
+   ['Web labellers', people.length],
+   ['Trusted (incl. owner)', S.filter(s=>s.trusted).length],
+   ['Auto-trusted', people.filter(s=>s.auto_trusted&&s.status==='auto').length],
+   ['Flagged labellers', people.filter(s=>s.flags.some(f=>f!=='few_calibration')).length],
+   ['Excluded labellers', people.filter(s=>s.excluded).length]
+ ].map(([k,v])=>`<div class="card"><div class="mut">${k}</div><div class="v">${v}</div></div>`).join('');
+
+ renderPeopleTable(S, th);
+
+ // A/B preference head-to-head table
+ const abG=[['Owner (the owner)',s=>s.owner],['Trusted (incl. owner)',s=>s.trusted],['Everyone except excluded',s=>!s.excluded],['Everyone (incl. excluded)',()=>true]];
+ const MU=(D.matchups&&D.matchups.length)?D.matchups:[{key:'default',a:D.compare[0],b:D.compare[1]}];
+ $('abh').textContent='A/B preference head-to-head — live v3 pool (starts at zero)';
+ $('abt').innerHTML=MU.map(mu=>{ const c0=esc(mu.a)+(mu.steps&&mu.steps[0]?` <span class="mut">(step ${mu.steps[0]})</span>`:''), c1=esc(mu.b)+(mu.steps&&mu.steps[1]?` <span class="mut">(step ${mu.steps[1]})</span>`:'');
+  return `<tr><th colspan="8" style="color:var(--fg);font-size:13.5px;padding-top:12px;background:#252932">${esc(mu.a)} vs ${esc(mu.b)} <span class="mut">${mu.pairs?'· '+mu.pairs+' pairs in pool':''}</span></th></tr><tr><th>Labeller group</th><th class="n">Labellers</th><th class="n">Individual answers</th><th class="n">${c0} better</th><th class="n">${c1} better</th><th class="n">Both good (tie)</th><th class="n">Both bad (tie)</th><th class="n">${esc(mu.a)} win share (decisive)</th></tr>`+abG.map(([n,f])=>{ const h=abHeadToHead(S,f,mu.key).overall, t=h.win+h.lose+h.both_good+h.both_bad, dec=h.win+h.lose, ppl=S.filter(s=>f(s)&&s.ab_h2h&&s.ab_h2h[mu.key]).length;
+  const c=(x)=>t?`${x} (${pct(x/t)})`:'—';
+  return `<tr><td>${n}</td><td class="n">${ppl}</td><td class="n">${t}</td><td class="n">${c(h.win)}</td><td class="n">${c(h.lose)}</td><td class="n">${c(h.both_good)}</td><td class="n">${c(h.both_bad)}</td><td class="n ${dec?(h.win/dec>0.5?'ok':h.win/dec<0.5?'bad':''):''}">${dec?pct(h.win/dec)+` <span class="mut">of ${dec}</span>`:'—'}</td></tr>`; }).join(''); }).join('');
+
+ if (D.archive){
+  const A=D.archive; $('arch-box').style.display='';
+  const archPrompts=A.n_prompts||0;
+  $('arch-cards').innerHTML=[['archive',A.title||A.id],['archived A/B answers',A.n_ab],['archived chat picks',A.n_chat],['archived grid labels',A.n_grid_labels],['archived pairs',A.n_pairs],['archived prompts',archPrompts]]
+    .map(([k,v])=>`<div class="card"><div class="mut">${k}</div><div class="v">${v}</div></div>`).join('');
+  const au=(kind,fmt)=>exportUrl(fmt,'all',kind)+'&archive=1';
+  $('arch-ab-jsonl').href=au('ab','jsonl'); $('arch-ab-csv').href=au('ab','csv');
+  $('arch-chat-jsonl').href=au('chat','jsonl'); $('arch-chat-csv').href=au('chat','csv');
+  $('arch-grid-jsonl').href=au('grid','jsonl');
+  const aD={...D, ab:A.ab||[], pairs:A.pairs||{}, matchups:A.matchups||[]};
+  const aS=labellerStats(aD,th,3,D.overrides||{});
+  const archG=[['Owner (the owner)',s=>s.owner],['Trusted (incl. owner)',s=>s.trusted],['Everyone except excluded',s=>!s.excluded],['Everyone (incl. excluded)',()=>true]];
+  const archMU=A.matchups&&A.matchups.length?A.matchups:[];
+  $('arch-abt').innerHTML=archMU.map(mu=>{ const c0=esc(mu.a), c1=esc(mu.b);
+    return `<tr><th colspan="8" style="color:var(--fg);font-size:14px;padding-top:12px">${esc(mu.a)} vs ${esc(mu.b)} <span class="mut">${mu.pairs?mu.pairs+' pairs':''} · archived</span></th></tr><tr><th>group</th><th>people</th><th>answers</th><th>${c0} better</th><th>${c1} better</th><th>both good</th><th>both bad</th><th>${esc(mu.a)} win share (decisive)</th></tr>`+archG.map(([n,f])=>{ const h=abHeadToHead(aS,f,mu.key).overall, tot=h.win+h.lose+h.both_good+h.both_bad, dec=h.win+h.lose, ppl=aS.filter(s=>f(s)&&s.ab_h2h&&s.ab_h2h[mu.key]).length;
+    const c=(x)=>tot?`${x} (${pct(x/tot)})`:'—';
+    return `<tr><td>${n}</td><td class="n">${ppl}</td><td class="n">${tot}</td><td class="n">${c(h.win)}</td><td class="n">${c(h.lose)}</td><td class="n">${c(h.both_good)}</td><td class="n">${c(h.both_bad)}</td><td class="n">${dec?pct(h.win/dec)+` <span class="mut">of ${dec}</span>`:'—'}</td></tr>`; }).join(''); }).join('')
+    || '<tr><td class="mut">Archived matchup table unavailable (pairs snapshot missing).</td></tr>';
+ } else { $('arch-box').style.display='none'; }
+
+ // Per-prompt table + drill-down
+ renderPerPrompt(S);
+ // Chat picks table
+ renderChatSection();
+ return S;
+}
+
+function renderPeopleTable(S, th){
+ const q=($('lab-search')?.value||'').trim().toLowerCase();
+ const filtered=S.filter(s=>{
+   if(q && !s.name.toLowerCase().includes(q) && !s.lid.toLowerCase().includes(q)) return false;
+   if(labFilter==='trusted') return s.trusted;
+   if(labFilter==='ab') return s.ab_rounds>0;
+   if(labFilter==='grid') return s.rounds>0;
+   if(labFilter==='flagged') return s.flags.length>0;
+   if(labFilter==='excluded') return s.excluded;
+   return true;
+ });
+ $('people').innerHTML=
+  '<tr><th>Labeller</th><th class="n">Grid rounds</th><th class="n">Avg time</th><th class="n">Median time</th><th class="n">Works rate</th><th class="n">All-bad rate</th><th>Status override &amp; role</th><th class="n">Reference rounds</th><th class="n">Agreement (κ)</th><th class="n">F1 score</th><th class="n">A/B rounds (individual)</th><th class="n">A/B check agreement</th><th class="n">Chat picks</th><th class="n">Precision</th><th class="n">Recall</th><th class="n">Check accuracy</th><th>Quality flags</th><th>Trusted</th><th>Last active</th></tr>'+
+  filtered.map(s=>`<tr class="click${s.excluded?' excl':''}" data-lid="${esc(s.lid)}"><td><b>${esc(s.name)}</b>${s.lid==='owner'?' <span class="mut">(imported)</span>':''} <span class="mut" style="font-size:11px">${esc(s.lid==='owner'?'':s.lid)}</span></td><td class="n">${s.rounds}</td><td class="n">${s.avg_ms?(s.avg_ms/1000).toFixed(1)+'s':'—'}</td><td class="n">${s.median_ms?(s.median_ms/1000).toFixed(1)+'s':'—'}</td><td class="n">${pct(s.works_rate)}</td><td class="n">${pct(s.all_bad_rate)}</td><td>${s.lid==='owner'?'<span class="role role-owner">owner</span>':`<select class="st st-${s.status}" data-lid="${esc(s.lid)}">${(D.statuses||['auto','owner','trusted','excluded']).map(o=>`<option${o===s.status?' selected':''}>${o}</option>`).join('')}</select>`} <span class="role role-${s.role}">${s.role}</span></td><td class="n">${s.cal_rounds}</td>
+   <td class="n ${s.agreement===null?'':s.agreement>=th?'ok':'bad'}">${f2(s.agreement)}</td><td class="n">${f2(s.cal_f1)}</td><td class="n">${s.ab_rounds||'—'}</td><td class="n ${s.ab_agreement===null?'':s.ab_agreement>=0.6?'ok':s.ab_agreement<0.4?'bad':''}">${s.ab_cal?pct(s.ab_agreement)+` <span class="mut">(${s.ab_cal})</span>`:'—'}</td><td class="n">${s.chat_votes?s.chat_votes+(s.chat_none?` <span class="mut">(${s.chat_none} none)</span>`:''):'—'}</td><td class="n">${pct(s.cal_precision)}</td><td class="n">${pct(s.cal_recall)}</td><td class="n">${pct(s.cal_accuracy)}</td>
+   <td>${s.flags.map(f=>`<span class="flag ${f==='few_calibration'?'warn':'bad'}">${f}</span>`).join('')}</td><td class="${s.trusted?'ok':''}">${s.trusted?'yes':'no'}</td><td class="mut">${esc((s.last||'').slice(0,16).replace('T',' '))}</td></tr>`).join('');
+ document.querySelectorAll('#people tr.click').forEach(tr=>tr.onclick=(e)=>{ if(e.target.closest('select'))return; openReview(tr.dataset.lid,S); });
+ document.querySelectorAll('#people select.st').forEach(sel=>{ sel.onclick=e=>e.stopPropagation(); sel.onchange=async()=>{ sel.disabled=true; const r=await fetch('/api/admin/override',{method:'POST',credentials:'same-origin',headers:{'Content-Type':'application/json'},body:JSON.stringify({lid:sel.dataset.lid,status:sel.value})}); const j=await r.json().catch(()=>({})); if(!r.ok){ alert(j.error||'could not save'); sel.disabled=false; return; } D.overrides=j.overrides; render(); }; });
+}
+$('lab-search').oninput=()=>D&&renderPeopleTable(LAST_S, Number($('th').value)||0);
+document.querySelectorAll('#lab-filter button').forEach(b=>b.onclick=()=>{
+  labFilter=b.dataset.lf;
+  document.querySelectorAll('#lab-filter button').forEach(x=>x.classList.toggle('on',x===b));
+  if(D) renderPeopleTable(LAST_S, Number($('th').value)||0);
+});
+
+// Per-prompt table + interactive drill-down
+function renderPerPrompt(S){
+ const T=headToHead(S,s=>s.trusted).per_prompt;
+ const abByPrompt=new Map();
+ for(const s of S.filter(x=>x.trusted)){
+   for(const m of Object.values(s.ab_per_prompt||{})){
+     for(const [p,v] of Object.entries(m)){
+       const cur=abByPrompt.get(p)||{tot:0,dec:0,ties:0};
+       const dec=v.win+v.lose, ties=v.both_good+v.both_bad;
+       cur.tot+=dec+ties; cur.dec+=dec; cur.ties+=ties;
+       abByPrompt.set(p,cur);
+     }
+   }
+ }
+ const allPrompts=new Set([...Object.keys(T), ...abByPrompt.keys()]);
+ const rows=[...allPrompts].map(p=>{
+   const m=T[p]||{};
+   const a=m[D.compare[0]], b=m[D.compare[1]];
+   const abp=abByPrompt.get(p)||{tot:0,dec:0,ties:0};
+   return {p,a,b,ra:a&&a.t?a.w/a.t:null,rb:b&&b.t?b.w/b.t:null,abTot:abp.tot,abDec:abp.dec,abTies:abp.ties};
+ }).sort((x,y)=>(y.ra??-1)-(x.ra??-1) || y.abDec-x.abDec);
+
+ $('pp').innerHTML=
+   `<tr><th>Prompt (click for drill-down)</th><th class="n">Grid: ${esc(D.compare[0])}</th><th class="n">Grid: ${esc(D.compare[1])}</th><th class="n">Grid difference</th><th class="n">A/B rounds (trusted)</th><th class="n">A/B decisive picks</th><th class="n">A/B ties</th></tr>`+
+   rows.map(r=>`<tr class="click${selectedPrompt===r.p?' sel':''}" data-prompt="${esc(r.p)}">
+     <td><b>${esc(r.p)}</b></td>
+     <td class="n">${r.a?`${r.a.w}/${r.a.t} (${pct(r.ra)})`:'—'}</td>
+     <td class="n">${r.b?`${r.b.w}/${r.b.t} (${pct(r.rb)})`:'—'}</td>
+     <td class="n ${r.ra!==null&&r.rb!==null?(r.ra-r.rb>0?'ok':r.ra-r.rb<0?'bad':''):''}">${r.ra!==null&&r.rb!==null?((r.ra-r.rb)*100).toFixed(1)+' pts':'—'}</td>
+     <td class="n">${r.abTot||'—'}</td>
+     <td class="n ok">${r.abDec||'—'}</td>
+     <td class="n mut">${r.abTies||'—'}</td>
+   </tr>`).join('');
+ document.querySelectorAll('#pp tr.click').forEach(tr=>tr.onclick=()=>openPromptDrill(tr.dataset.prompt, S));
+ if(selectedPrompt) openPromptDrill(selectedPrompt, S, true);
+}
+
+function openPromptDrill(prompt, S, keepScroll=false){
+ selectedPrompt=prompt;
+ const box=$('drill');
+ if(!prompt){ box.innerHTML=''; return; }
+ const trustedLids=new Set(S.filter(s=>s.trusted).map(s=>s.lid));
+ const abItems=(D.ab||[]).filter(l=>{
+   if(!trustedLids.has(l.lid)) return false;
+   const pr=D.pairs[l.pair_id];
+   return pr && pr.prompt===prompt;
+ }).slice(0,24);
+ const gridItems=dedupe(D.labels).filter(l=>{
+   if(!trustedLids.has(l.lid) || l.lid==='owner') return false;
+   const r=D.rounds[l.round_id];
+   return r && r.prompt===prompt;
+ }).slice(0,12);
+
+ box.innerHTML=`<div class="drill-box">
+   <div class="drill-head">
+     <div><b style="font-size:15px">Prompt drill-down: "${esc(prompt)}"</b> <span class="mut">(${abItems.length} trusted A/B answers shown · ${gridItems.length} web grid sheets)</span></div>
+     <button type="button" id="drill-close">✕ Close drill-down</button>
+   </div>
+   ${abItems.length?`<div style="margin-bottom:12px"><div class="mut" style="font-size:12px;margin-bottom:6px">Trusted A/B pair ratings for "${esc(prompt)}":</div>
+   <div class="rounds">${abItems.map((l,i)=>{
+     const pr=D.pairs[l.pair_id]||{ck:['?','?']};
+     const lab={A:'A better',B:'B better',both_good:'both good',both_bad:'both bad'}[l.choice]||l.choice;
+     return `<div class="rd" style="width:180px"><canvas id="dr-ab-${i}" width="160" height="80" style="width:160px;height:80px"></canvas>
+       <div style="font-size:11.5px;margin-top:4px"><b class="${l.choice==='both_bad'?'bad':'ok'}">${lab}</b> · ${esc(l.name||l.lid)}</div>
+       <div class="mut" style="font-size:10.5px">A: ${esc(pr.ck[0])} · B: ${esc(pr.ck[1])}</div></div>`;
+   }).join('')}</div></div>`:''}
+   ${gridItems.length?`<div><div class="mut" style="font-size:12px;margin-bottom:6px">Trusted 40-sprite Grid sheets for "${esc(prompt)}":</div>
+   <div class="rounds">${gridItems.map((l,i)=>`<div class="rd"><canvas id="dr-gr-${i}" width="256" height="160"></canvas>
+     <div style="font-size:12px;margin-top:4px"><b>${l.works.length} works</b> · ${esc(l.name||l.lid)}</div></div>`).join('')}</div></div>`:''}
+ </div>`;
+ $('drill-close').onclick=()=>{ selectedPrompt=null; box.innerHTML=''; document.querySelectorAll('#pp tr.sel').forEach(x=>x.classList.remove('sel')); };
+ abItems.forEach((l,i)=>{
+   const cv=$('dr-ab-'+i); if(!cv) return;
+   img(`/ab/${l.pair_id}.png`).then(im=>{
+     const c=cv.getContext('2d'); c.imageSmoothingEnabled=false;
+     c.fillStyle='#22252b'; c.fillRect(0,0,160,80);
+     for(const [idx,x] of [[0,4],[1,84]]){ c.save(); c.translate(x,4); checker(c,72,72,9); c.drawImage(im,idx*16,0,16,16,0,0,72,72); c.restore(); }
+     const frame=(x,col)=>{ c.strokeStyle=col; c.lineWidth=3; c.strokeRect(x-1,3,74,74); };
+     if(l.choice==='A') frame(4,'#3dd68c'); else if(l.choice==='B') frame(84,'#3dd68c'); else { const col=l.choice==='both_good'?'#3dd68c':'#ff8a8a'; frame(4,col); frame(84,col); }
+   }).catch(()=>{});
+ });
+ gridItems.forEach((l,i)=>{
+   const cv=$('dr-gr-'+i); if(!cv) return;
+   img(`/s/${l.round_id}.png`).then(im=>{
+     const c=cv.getContext('2d'); c.imageSmoothingEnabled=false;
+     checker(c,256,160,8); c.drawImage(im,0,0,128,80,0,0,256,160);
+     const w=new Set(l.works);
+     for(let k=0;k<40;k++){ if(w.has(k)){ c.strokeStyle='#3dd68c'; c.lineWidth=2; c.strokeRect((k%8)*32+1,Math.floor(k/8)*32+1,30,30); } }
+   }).catch(()=>{});
+ });
+ if(!keepScroll) box.scrollIntoView({behavior:'smooth',block:'nearest'});
+}
+
+// ---------- Chat worker info & recent chat picks ----------
+async function loadChatInfo(){
+  try{
+    const r=await fetch('/api/chat/info',{credentials:'same-origin'});
+    if(!r.ok) return;
+    CHAT_INFO=await r.json();
+    renderChatInfo();
+    renderChatOverviewCard();
+    if(typeof syncGridCondOptions==='function') syncGridCondOptions();
+  }catch(e){}
+}
+function renderChatOverviewCard(){
+  const el=$('ov-chat-metrics'); if(!el) return;
+  const chatArr=D.chat||[];
+  const chosen=chatArr.filter(c=>!c.none_good).length;
+  const none=chatArr.filter(c=>c.none_good).length;
+  const ci=CHAT_INFO;
+  const online=ci?!!ci.worker_online:null;
+  el.innerHTML=[
+    ['Worker status', online===null?'loading…':(online?'<span class="ok">Online</span>':'<span class="bad">Offline</span>'), ci?`Queue max: ${ci.queue_max??'—'}`:'From /api/chat/info'],
+    ['Worker queue', ci?`${ci.waiting??0} waiting · ${ci.running??0} running`:'—', ci&&ci.avg_ms?`Avg gen: ${(ci.avg_ms/1000).toFixed(1)}s (${ci.avg_ms} ms)`:'—'],
+    ['Total chat picks', chatArr.length.toLocaleString('en-GB'), `${chosen} sprite picked · ${none} none good`],
+    ['Pick rate', pct(chatArr.length?chosen/chatArr.length:null), `Across ${new Set(chatArr.map(c=>c.prompt)).size} distinct prompts`]
+  ].map(([l,v,h])=>`<div class="ov-stat"><div class="lbl">${l}</div><div class="val">${v}</div><div class="hint">${h}</div></div>`).join('');
+}
+function renderChatInfo(){
+  const ci=CHAT_INFO;
+  const dot=$('nav-dot-chat');
+  if(dot){ dot.className='dot '+(ci?.worker_online?'on':'off'); }
+  const box=$('chat-info-cards'); if(!box||!ci) return;
+  box.innerHTML=[
+    ['Worker status', ci.worker_online?'<span class="pill online">Online</span>':'<span class="pill offline">Offline</span>', `worker_online: ${Boolean(ci.worker_online)}`],
+    ['Jobs waiting in queue', String(ci.waiting??0), `Capacity: ${ci.queue_max??'—'} max (queue_max)`],
+    ['Jobs running now', String(ci.running??0), `Active generation jobs`],
+    ['Average generation time', ci.avg_ms!=null?`${(ci.avg_ms/1000).toFixed(2)}s`:'—', `${ci.avg_ms??'—'} ms per 20-sprite batch`],
+    ['Max queue size', String(ci.queue_max??'—'), `Maximum concurrent queued jobs`],
+    ['Max prompt length', ci.prompt_max?`${ci.prompt_max} chars`:'—', `Character limit per prompt`]
+  ].map(([k,v,sub])=>`<div class="card"><div class="mut">${k}</div><div class="v">${v}</div><div class="sub">${sub}</div></div>`).join('');
+}
+function renderChatSection(){
+  if(!D) return;
+  const all=[...(D.chat||[])].sort((a,b)=>String(b.ts||b.at||'').localeCompare(String(a.ts||a.at||'')));
+  const q=($('chat-search')?.value||'').trim().toLowerCase();
+  const limit=Number($('chat-limit')?.value||50);
+  const filtered=all.filter(c=>{
+    if(!q) return true;
+    const mKey=c.model?.key||'';
+    return (c.prompt||'').toLowerCase().includes(q) || (c.name||'').toLowerCase().includes(q) || mKey.toLowerCase().includes(q) || (c.scorer||'').toLowerCase().includes(q);
+  });
+  const shown=filtered.slice(0,limit);
+  const chosenCount=all.filter(c=>!c.none_good).length;
+  const noneCount=all.filter(c=>c.none_good).length;
+  const rts=all.map(c=>c.response_ms).filter(Number.isFinite).sort((a,b)=>a-b);
+  const medMs=rts.length?rts[rts.length>>1]:null;
+  const gens=all.map(c=>c.gen_ms).filter(Number.isFinite).sort((a,b)=>a-b);
+  const medGen=gens.length?gens[gens.length>>1]:null;
+  const sends=all.map(c=>c.send_ms).filter(Number.isFinite).sort((a,b)=>a-b);
+  const hasSend=sends.length>0;
+
+  $('chat-sub').textContent=`showing ${shown.length} of ${filtered.length} (${all.length} total picks)`;
+  $('chat-summary-cards').innerHTML=[
+    ['Total chat picks', all.length.toLocaleString('en-GB'), `${new Set(all.map(c=>c.prompt)).size} distinct prompts`],
+    ['Sprite chosen', `${chosenCount} (${pct(all.length?chosenCount/all.length:0)})`, `User picked a generated candidate`],
+    ['Marked "none good"', `${noneCount} (${pct(all.length?noneCount/all.length:0)})`, `All candidates rejected`],
+    ['Median time to pick', medMs?`${(medMs/1000).toFixed(1)}s`:'—', (all.some(c=>Number.isFinite(c.send_ms))&&sends.length)?`Median send to sprites: ${(sends[sends.length>>1]/1000).toFixed(2)}s`:(medGen?`Median worker gen: ${(medGen/1000).toFixed(2)}s`:'')]
+  ].map(([k,v,sub])=>`<div class="card"><div class="mut">${k}</div><div class="v">${v}</div><div class="sub">${sub}</div></div>`).join('');
+
+  $('chat-table').innerHTML=
+    `<tr>
+      <th>Prompt</th>
+      <th>Who (Labeller)</th>
+      <th>Model &amp; scorer</th>
+      <th>Pick outcome &amp; candidate details</th>
+      <th class="n">Gen time</th>
+      ${hasSend?'<th class="n">Send to sprites</th>':''}
+      <th class="n">Time to pick</th>
+      <th>Time</th>
+    </tr>`+
+    shown.map(c=>{
+      const m=c.model||{};
+      const mStr=esc(m.key||'?')+(m.step?` <span class="mut">(step ${(m.step/1000).toFixed(0)}k)</span>`:'')+(c.scorer?` <span class="mut">· ${esc(c.scorer)}</span>`:'');
+      const cand=(c.shown&&Number.isInteger(c.chosen)&&c.shown[c.chosen])?c.shown[c.chosen]:null;
+      const thumbSrc=c.thumb||c.img||c.png||c.sprite||(cand&&(cand.png||cand.img||cand.thumb||cand.url))||null;
+      const thumbHtml=thumbSrc?`<img class="chat-thumb" src="${esc(thumbSrc)}" alt="sprite">`:`<span class="chat-thumb chat-thumb-empty" aria-hidden="true"></span>`;
+      const reasonBadge=c.none_reason?` <span class="fw-reason">${esc(c.none_reason_label||c.none_reason)}</span>`:'';
+      let pickHtml='';
+      if(c.none_good){
+        pickHtml=`${thumbHtml}<span class="bad"><b>None good</b></span>${reasonBadge} <span class="mut">(of ${c.n_samples||4} samples)</span>`;
+      } else {
+        const slot=Number.isInteger(c.chosen)?`#${c.chosen+1}`:(c.chosen_rank?`Rank #${c.chosen_rank}`:'Picked');
+        const sc=cand?.score??c.chosen_score;
+        const meta=[
+          c.chosen_seed!=null?`seed ${c.chosen_seed}`:'',
+          sc!=null?`score ${Number(sc).toFixed(3)}`:'',
+          cand?.ncolors?`${cand.ncolors} colors`:'',
+          cand?.fill?`${cand.fill}px fill`:''
+        ].filter(Boolean).join(' · ');
+        pickHtml=`${thumbHtml}<span class="ok"><b>Picked ${slot}</b></span>${meta?` <span class="mut">(${esc(meta)})</span>`:''}`;
+      }
+      const ts=c.ts||c.at||'';
+      const timeStr=ts?new Date(ts).toLocaleString('en-GB',{day:'2-digit',month:'short',hour:'2-digit',minute:'2-digit',second:'2-digit',hour12:false}):'—';
+      return `<tr>
+        <td><b>${esc(c.prompt||'')}</b></td>
+        <td>${esc(c.name||c.lid||'')} <span class="mut" style="font-size:11px">${esc(c.lid||'')}</span></td>
+        <td>${mStr}</td>
+        <td>${pickHtml}</td>
+        <td class="n mut">${c.gen_ms!=null?(c.gen_ms/1000).toFixed(2)+'s':'—'}</td>
+        ${hasSend?`<td class="n">${Number.isFinite(c.send_ms)?(c.send_ms/1000).toFixed(2)+'s':'—'}</td>`:''}
+        <td class="n">${c.response_ms!=null?(c.response_ms/1000).toFixed(1)+'s':'—'}</td>
+        <td class="mut">${esc(timeStr)}</td>
+      </tr>`;
+    }).join('');
+}
+$('chat-search').oninput=()=>renderChatSection();
+$('chat-limit').onchange=()=>renderChatSection();
+
+function exportUrl(fmt,who,kind){ return `/api/admin/export?fmt=${fmt}&who=${encodeURIComponent(who)}&th=${encodeURIComponent($('th').value)}&kind=${kind||$('kind').value}`; }
+// ---------- per-labeller visual review (overlay, mobile-friendly) ----------
+const imgC=new Map();
+function img(src){ if(!imgC.has(src)) imgC.set(src,new Promise((res,rej)=>{const im=new Image();im.onload=()=>res(im);im.onerror=rej;im.src=src;})); return imgC.get(src); }
+function checker(c,w,h,cell){ for(let y=0;y<h;y+=cell)for(let x=0;x<w;x+=cell){ c.fillStyle=((x/cell+y/cell)%2)?'#9d9d9d':'#8a8a8a'; c.fillRect(x,y,cell,cell);} }
+let RV={lid:null,tab:'ab',page:0};
+const PER={ab:50,grid:20};
+function ownerLids(S){ return new Set(S.filter(x=>x.owner).map(x=>x.lid)); }
+function openReview(lid,S,tab){
+ const s=S.find(x=>x.lid===lid); if(!s) return;
+ const g=dedupe(D.labels).filter(l=>l.lid===lid&&D.rounds[l.round_id]);
+ const seen=new Set(); const ab=[...(D.ab||[])].filter(l=>l.lid===lid).sort((x,y)=>String(x.ts).localeCompare(String(y.ts))).filter(l=>{const k=l.pair_id; if(seen.has(k))return false; seen.add(k); return true;});
+ if(RV.lid!==lid){ RV={lid,tab:tab||(ab.length&&!g.length?'ab':g.length?'grid':'ab'),page:0}; }
+ if(tab) RV.tab=tab;
+ const owners=ownerLids(S);
+ const ownAB=new Map(), ownGrid=new Map();
+ if(!s.owner){ for(const l of D.ab||[]) if(owners.has(l.lid)&&!ownAB.has(l.pair_id)) ownAB.set(l.pair_id,l); for(const l of D.labels) if(owners.has(l.lid)&&l.lid!=='owner'&&!ownGrid.has(l.round_id)) ownGrid.set(l.round_id,l); }
+ const items=(RV.tab==='ab'?ab:g).sort((x,y)=>String(y.ts).localeCompare(String(x.ts)));
+ const per=PER[RV.tab], pages=Math.max(1,Math.ceil(items.length/per)); RV.page=Math.min(RV.page,pages-1);
+ const pageItems=items.slice(RV.page*per,(RV.page+1)*per);
+ const calAB=ab.filter(l=>D.pairs[l.pair_id]?.kind==='abcal'), calAgree=calAB.filter(l=>l.choice===D.pairs[l.pair_id].truth).length;
+ const ch=s.ab_choices||{A:0,B:0,both_good:0,both_bad:0};
+ const stSel=s.lid==='owner'?'<span class="role role-owner">owner (imported)</span>':`<select id="rvst" class="st st-${s.status}">${(D.statuses||['auto','owner','trusted','excluded']).map(o=>`<option${o===s.status?' selected':''}>${o}</option>`).join('')}</select>`;
+ let h=`<div class="rvtop"><div class="rvhead"><b>${esc(s.name)}</b> <span class="mut">${esc(s.lid)}</span> <button id="rvclose">✕ Close</button></div>
+  <div class="rvrow">Status: ${stSel} <span class="role role-${s.role}">${s.role}</span> ${s.flags.map(f=>`<span class="flag ${f==='few_calibration'?'warn':'bad'}">${f}</span>`).join('')}</div>
+  <div class="rvrow mut">Grid: ${s.rounds} rounds · works-rate ${pct(s.works_rate)} · all-bad ${pct(s.all_bad_rate)} · median ${s.median_ms?(s.median_ms/1000).toFixed(1)+'s':'—'} · κ ${f2(s.agreement)} (${s.cal_rounds} ref)<br>
+  A/B: ${s.ab_rounds||0} answers · A ${ch.A} · B ${ch.B} · both good ${ch.both_good} · both bad ${ch.both_bad} · median ${s.ab_median_ms?(s.ab_median_ms/1000).toFixed(1)+'s':'—'} · agrees with the owner on ${calAgree}/${calAB.length} hidden checks</div>
+  <div class="rvrow"><span class="tabs"><button data-tab="ab" class="${RV.tab==='ab'?'on':''}">A/B (${ab.length})</button><button data-tab="grid" class="${RV.tab==='grid'?'on':''}">Grid (${g.length})</button></span>
+  <span class="pg"><button id="rvprev" ${RV.page?'':'disabled'}>‹</button> page ${RV.page+1}/${pages} <button id="rvnext" ${RV.page<pages-1?'':'disabled'}>›</button></span>
+  <a href="${exportUrl('jsonl',lid,RV.tab)}">JSONL</a> · <a href="${exportUrl('csv',lid,RV.tab)}">CSV</a>${lid!=='owner'?` · <button id="purge" class="danger">Delete labels</button>`:''}</div>
+  <div class="rv-help"><b>Colour &amp; calibration guide:</b> <span class="ok">Green</span> = picked / works (agrees on check) · <span class="warn">Yellow</span> = labeller picked on check, the owner did not · <span class="bad">Red</span> = the owner picked on check, labeller missed (or both bad) · Blue corner = owner pick.</div></div>`;
+ if(RV.tab==='ab'){
+  h+=`<p class="legend mut">Green frame = their pick. "both good"/"both bad" frame both (green/red). Hidden checks show the owner's pick (★) and ✓/✗.${s.owner?'':' "Owner:" = what an owner picked on the same pair.'}</p><div class="rvlist">`;
+  h+=pageItems.map((l,k)=>{ const pr=D.pairs[l.pair_id]||{ck:['?','?']}; const cal=pr.kind==='abcal'; const ok=cal?l.choice===pr.truth:null; const o=ownAB.get(l.pair_id);
+   const lab={A:'A better',B:'B better',both_good:'both good',both_bad:'both bad'}[l.choice]||l.choice;
+   return `<div class="rv ab"><div class="rvp">${esc(pr.prompt||'')}</div><canvas id="rva${k}" width="272" height="136"></canvas>
+    <div class="rvm"><span class="${l.choice==='both_bad'?'bad':'ok'}"><b>${lab}</b></span> · ${l.response_ms!=null?(l.response_ms/1000).toFixed(1)+'s':'—'}${(l.flags||[]).length?` · <span class="bad">${l.flags.join(',')}</span>`:''}</div>
+    <div class="rvm mut">A: ${esc(cal?'(check pair)':pr.ck[0])} · B: ${esc(cal?'(check pair)':pr.ck[1])}${cal?` · the owner: ${pr.truth} better <b class="${ok?'ok':'bad'}">${ok?'✓ agrees':'✗ differs'}</b>`:''}${o?` · Owner: ${({A:'A better',B:'B better',both_good:'both good',both_bad:'both bad'})[o.choice]}`:''}</div>
+    <div class="rvm mut">${esc(l.ts?new Date(l.ts).toLocaleString([], {dateStyle:'short',timeStyle:'short'}):'')}</div></div>`; }).join('')+'</div>';
+ } else {
+  h+=`<p class="legend mut">Green = they clicked "works". On hidden checks: <span class="ok">green</span> = the owner too, <span class="warn">yellow</span> = only them, <span class="bad">red</span> = the owner clicked, they didn't.${s.owner?'':' Blue corner = an owner clicked it on the same round.'}</p><div class="rvlist">`;
+  h+=pageItems.map((l,k)=>{ const r=D.rounds[l.round_id]; if(r.kind==='owner') return `<div class="rv"><div class="rvp">${esc(r.prompt)}</div><div class="mut">imported round (sprite files are not in this archive) · ${l.works.length} works</div></div>`;
+   return `<div class="rv"><div class="rvp">${esc(r.prompt)} <span class="mut">${r.kind==='cal'?'· hidden check':''}</span></div><canvas id="rvg${k}" width="512" height="320"></canvas>
+    <div class="rvm"><b class="${l.works.length?'ok':'bad'}">${l.works.length?l.works.length+' works':'all bad'}</b> · ${l.response_ms!=null?(l.response_ms/1000).toFixed(1)+'s':'—'}${(l.flags||[]).length?` · <span class="bad">${l.flags.join(',')}</span>`:''}${ownGrid.has(l.round_id)?` · owner clicked ${ownGrid.get(l.round_id).works.length}`:''}</div>
+    <div class="rvm mut">${esc(l.ts?new Date(l.ts).toLocaleString([], {dateStyle:'short',timeStyle:'short'}):'')}</div></div>`; }).join('')+'</div>';
+ }
+ if(!pageItems.length) h+='<p class="mut" style="padding:0 18px">No answers of this type.</p>';
+ const ov=$('review'); ov.innerHTML=h; ov.style.display='block'; document.body.style.overflow='hidden'; ov.scrollTop=0;
+ $('rvclose').onclick=()=>{ ov.style.display='none'; document.body.style.overflow=''; };
+ ov.querySelectorAll('[data-tab]').forEach(b=>b.onclick=()=>{ RV.page=0; openReview(lid,S,b.dataset.tab); });
+ if($('rvprev')) $('rvprev').onclick=()=>{ RV.page--; openReview(lid,S); };
+ if($('rvnext')) $('rvnext').onclick=()=>{ RV.page++; openReview(lid,S); };
+ if($('rvst')) $('rvst').onchange=async()=>{ const sel=$('rvst'); sel.disabled=true; const r=await fetch('/api/admin/override',{method:'POST',credentials:'same-origin',headers:{'Content-Type':'application/json'},body:JSON.stringify({lid,status:sel.value})}); const j=await r.json().catch(()=>({})); if(!r.ok){ alert(j.error||'could not save'); sel.disabled=false; return; } D.overrides=j.overrides; const S2=render(); openReview(lid,S2); };
+ if($('purge')) $('purge').onclick=async()=>{ if(!confirm('Delete all labels of '+s.name+'? This cannot be undone.'))return; const r=await fetch('/api/admin/purge',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({lids:[lid]})}); alert(JSON.stringify(await r.json())); ov.style.display='none'; document.body.style.overflow=''; load(); };
+ // draw
+ pageItems.forEach((l,k)=>{
+  if(RV.tab==='ab'){ const cv=$('rva'+k); if(!cv) return; img(`/ab/${l.pair_id}.png`).then(im=>{ const c=cv.getContext('2d'); c.imageSmoothingEnabled=false;
+    c.fillStyle='#272a30'; c.fillRect(0,0,272,136);
+    for(const [i,x] of [[0,4],[1,140]]){ c.save(); c.translate(x,4); checker(c,128,128,16); c.drawImage(im,i*16,0,16,16,0,0,128,128); c.restore(); }
+    const pr=D.pairs[l.pair_id]||{}; const frame=(x,col)=>{ c.strokeStyle=col; c.lineWidth=4; c.strokeRect(x-2,2,132,132); };
+    if(l.choice==='A') frame(4,'#3dd68c'); else if(l.choice==='B') frame(140,'#3dd68c'); else { const col=l.choice==='both_good'?'#3dd68c':'#ff8a8a'; frame(4,col); frame(140,col); }
+    c.font='bold 14px system-ui'; c.fillStyle='#fff'; c.strokeStyle='#000'; c.lineWidth=3;
+    for(const [t,x] of [['A',10],['B',146]]){ c.strokeText(t,x,20); c.fillText(t,x,20); }
+    if(pr.kind==='abcal'){ const x=pr.truth==='A'?112:248; c.strokeText('★',x,20); c.fillStyle='#ffcf6e'; c.fillText('★',x,20); }
+   }).catch(()=>{}); }
+  else { const cv=$('rvg'+k); if(!cv) return; const r=D.rounds[l.round_id]; img(`/s/${l.round_id}.png`).then(im=>{ const c=cv.getContext('2d'); c.imageSmoothingEnabled=false;
+    checker(c,512,320,8); c.drawImage(im,0,0,128,80,0,0,512,320); const w=new Set(l.works); const o=ownGrid.get(l.round_id); const ow=o?new Set(o.works):null;
+    for(let i=0;i<40;i++){ const x=(i%8)*64,y=Math.floor(i/8)*64; let col=null; if(r.kind==='cal'){const t=r.truth[i]; if(w.has(i)&&t)col='#3dd68c'; else if(w.has(i))col='#ffcf6e'; else if(t)col='#ff8a8a';} else if(w.has(i)) col='#3dd68c';
+     c.strokeStyle='rgba(0,0,0,.25)'; c.lineWidth=1; c.strokeRect(x+.5,y+.5,63,63);
+     if(col){ c.strokeStyle=col; c.lineWidth=4; c.strokeRect(x+2,y+2,60,60); }
+     if(ow&&ow.has(i)){ c.fillStyle='#7aa2ff'; c.fillRect(x+50,y+4,10,10); } }
+   }).catch(()=>{}); }
+ });
+}
+$('lf').onsubmit=async(e)=>{ e.preventDefault(); $('lerr').textContent=''; const r=await fetch('/api/admin/login',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({password:$('pw').value})}); if(r.ok){ $('pw').value=''; load(); } else { const j=await r.json().catch(()=>({})); $('lerr').textContent=j.error||'login failed'; } };
+$('th').oninput=()=>D&&render();
+$('reload').onclick=()=>load();
+$('exj').onclick=()=>location.href=exportUrl('jsonl',$('who').value);
+$('exc').onclick=()=>location.href=exportUrl('csv',$('who').value);
+
+// ----- live training panel (read-only; 60s refresh) -----
+const TZ='UTC';
+const fmtVienna=(iso)=>{
+  if(!iso) return '—';
+  const d=new Date(iso);
+  if(!isFinite(d)) return '—';
+  return d.toLocaleString('en-GB',{timeZone:TZ,day:'2-digit',month:'short',hour:'2-digit',minute:'2-digit',hour12:false})+' UTC';
+};
+const fmtNum=(x,d=2)=>x===null||x===undefined||!isFinite(x)?'—':Number(x).toFixed(d);
+const fmtInt=(x)=>x===null||x===undefined||!isFinite(x)?'—':Math.round(x).toLocaleString('en-GB');
+function drawChart(cv, series, opts){
+  const w=cv.width, h=cv.height, pad={l:44,r:12,t:12,b:28};
+  const c=cv.getContext('2d');
+  c.clearRect(0,0,w,h);
+  c.fillStyle='#181a1e'; c.fillRect(0,0,w,h);
+  const pts=series.flatMap(s=>s.pts||[]);
+  if(!pts.length && !(opts.hlines||[]).length){
+    c.fillStyle='#9aa0a8'; c.font='13px Inter,system-ui'; c.fillText('no points yet', pad.l, h/2); return;
+  }
+  const xs=pts.map(p=>p.x), ys=pts.map(p=>p.y).concat((opts.hlines||[]).map(h=>h.y));
+  let x0=Math.min(...(xs.length?xs:[0])), x1=Math.max(...(xs.length?xs:[1]));
+  let y0=opts.yMin, y1=opts.yMax;
+  if(y0==null || y1==null){
+    let mn=Math.min(...ys), mx=Math.max(...ys);
+    if(opts.zoom && ys.length>8){ const so=[...ys].sort((a,b)=>a-b); mx=Math.max(so[Math.floor(so.length*0.9)], ...(opts.hlines||[]).map(h=>h.y)); }
+    const sp=mx-mn || 0.1;
+    y0 = y0==null ? mn-sp*0.12 : y0;
+    y1 = y1==null ? mx+sp*0.12 : y1;
+  }
+  if(x1<=x0) x1=x0+1;
+  if(y1<=y0) y1=y0+0.1;
+  const X=x=>pad.l+(x-x0)/(x1-x0)*(w-pad.l-pad.r);
+  const Y=y=>pad.t+(1-(y-y0)/(y1-y0))*(h-pad.t-pad.b);
+  c.strokeStyle='#3a3e45'; c.lineWidth=1;
+  c.beginPath(); c.moveTo(pad.l,pad.t); c.lineTo(pad.l,h-pad.b); c.lineTo(w-pad.r,h-pad.b); c.stroke();
+  c.fillStyle='#9aa0a8'; c.font='11px Inter,system-ui';
+  const yTicks=4;
+  for(let i=0;i<=yTicks;i++){
+    const y=y0+(y1-y0)*i/yTicks, yy=Y(y);
+    c.strokeStyle='#282c34'; c.beginPath(); c.moveTo(pad.l,yy); c.lineTo(w-pad.r,yy); c.stroke();
+    c.fillStyle='#9aa0a8'; c.fillText(y.toFixed(opts.yd||3), 4, yy+4);
+  }
+  const xTicks=4;
+  for(let i=0;i<=xTicks;i++){
+    const x=x0+(x1-x0)*i/xTicks;
+    const label=opts.xLabel?opts.xLabel(x):String(Math.round(x));
+    c.fillText(label, X(x)-10, h-8);
+  }
+  const placed=[];
+  for(const hl of [...(opts.hlines||[])].sort((a,b)=>a.y-b.y)){
+    const yy=Y(hl.y);
+    c.strokeStyle=hl.color||'#ffcf6e'; c.setLineDash([5,4]); c.beginPath(); c.moveTo(pad.l,yy); c.lineTo(w-pad.r,yy); c.stroke(); c.setLineDash([]);
+    if(opts.hlineText===false) continue;
+    const txt=(hl.label||'')+' '+hl.y.toFixed(3), tw=c.measureText(txt).width;
+    let lx=w-pad.r-tw-4;
+    while(placed.some(p=>Math.abs(p.y-yy)<12 && lx<p.x+p.w+8 && lx+tw+8>p.x)) lx-=tw+16;
+    placed.push({x:lx,y:yy,w:tw});
+    c.fillStyle=hl.color||'#ffcf6e'; c.fillText(txt, Math.max(pad.l+4,lx), yy-4);
+  }
+  c.save(); c.beginPath(); c.rect(pad.l,pad.t-2,w-pad.l-pad.r,h-pad.t-pad.b+2); c.clip();
+  for(const s of series){
+    if(!s.pts||s.pts.length<1) continue;
+    c.strokeStyle=s.color; c.lineWidth=s.width||2; c.beginPath();
+    s.pts.forEach((p,i)=>{ const x=X(p.x), y=Y(p.y); if(i) c.lineTo(x,y); else c.moveTo(x,y); });
+    c.stroke();
+    if(s.dots){ c.fillStyle=s.color; for(const p of s.pts){ c.beginPath(); c.arc(X(p.x),Y(p.y),2.5,0,Math.PI*2); c.fill(); } }
+  }
+  c.restore();
+  if(opts.legend){
+    let lx=pad.l+8, ly=pad.t+12;
+    c.font='11px Inter,system-ui';
+    for(const s of [...series, ...((opts.hlines||[]).map(h=>({label:h.label,color:h.color})))]){
+      if(!s.label) continue;
+      c.fillStyle=s.color; c.fillRect(lx,ly-7,10,3);
+      c.fillStyle='#c8c8cc'; c.fillText(s.label, lx+14, ly);
+      lx+=c.measureText(s.label).width+30;
+    }
+  }
+}
+let trTimer=null;
+// ----- run history + compare (read-only; data pushed by tools/push_runs.py) -----
+const PAL=['#7aa2ff','#3dd68c','#ffcf6e','#ff8a8a','#c792ea','#5fd3e6','#f78c6c','#a5e075','#e6a0c4','#b0b8c4','#ffd1a1','#8fb3ff'];
+const SPLIT_NAME={old:'old dev split (v1/v2 held-out)',iid:'v3 iid split (new dev)',probe:'v3 probe split',iidrestored:'v3 iid-restored split'};
+const SPLIT_SHORT={old:'old dev',iid:'v3 iid',probe:'v3 probe',iidrestored:'v3 iid-restored'};
+// baselines.json rows (best checkpoint rescored on the new splits) -> run id
+const BASE_RUN={v1_cooldownA:'full1p4m-L10-cont-cooldown',v1_cooldownB_cfg:'full1p4m-L10-final32-cfg',v2_best:'v2-L12-full'};
+const BASE_COLOR={v1_cooldownA:'#ffcf6e',v1_cooldownB_cfg:'#ff8a8a',v2_best:'#c792ea'};
+const XNAME=['step','images seen','training hours'];
+let H=null, SNAP=null, REF={}, PICK='', SEL=null;
+const fmtM=(x)=>x==null||!isFinite(x)?'—':(x>=1e6?(x/1e6).toFixed(x>=1e7?0:1)+'M':x>=1e3?(x/1e3).toFixed(0)+'k':String(Math.round(x)));
+const fmtShort=(iso)=>{ if(!iso) return '—'; const d=new Date(iso); return isFinite(d)?d.toLocaleString('en-GB',{timeZone:TZ,day:'2-digit',month:'short',hour:'2-digit',minute:'2-digit',hour12:false}):'—'; };
+const fmtParams=(x)=>x==null||!isFinite(x)?'—':(x/1e6).toFixed(1)+'M';
+const xFmt=(k)=>k===2?(x=>x.toFixed(1)+'h'):(x=>fmtM(x));
+const runColor=(id)=>{ const i=(H?.runs||[]).findIndex(r=>r.id===id); return PAL[(i<0?0:i)%PAL.length]; };
+const splitOfRun=(r)=>r&&r.family==='v3'?'iid':'old';
+function baseLines(split){
+  const rows=H?.baselines?.rows||{};
+  if(split==='old') return [];
+  return Object.entries(rows).filter(([,v])=>v[split]!=null).map(([k,v])=>({y:v[split],color:BASE_COLOR[k]||'#b0b8c4',label:v.label+' ('+SPLIT_SHORT[split]+')'}));
+}
+function legendHtml(series,hl){
+  return series.filter(s=>s.label).map(s=>`<span><i style="background:${s.color}"></i>${esc(s.label)}</span>`).join('')
+    +(hl||[]).map(h=>`<span><i class="dash" style="border-color:${h.color}"></i>${esc(h.label)} ${h.y.toFixed(3)}</span>`).join('');
+}
+function bestOn(r,split){
+  if(r.best&&r.best[split]!=null) return {v:r.best[split],rescored:false};
+  const b=Object.entries(H?.baselines?.rows||{}).find(([k])=>BASE_RUN[k]===r.id);
+  if(b&&b[1][split]!=null) return {v:b[1][split],rescored:true};
+  return null;
+}
+function renderHistory(){
+  const t=$('trh-table');
+  const runs=H?.runs||[];
+  if(!runs.length){ t.innerHTML='<tr><td class="mut">No run history pushed yet.</td></tr>'; return; }
+  const cols=['old','iid','probe','iidrestored'];
+  const mins={}; for(const c of cols){ const vs=runs.map(r=>bestOn(r,c)?.v).filter(v=>v!=null); mins[c]=vs.length?Math.min(...vs):null; }
+  const CH={old:'Old dev (v1/v2)',iid:'v3 iid (new dev)',probe:'v3 probe',iidrestored:'v3 iid-restored'};
+  let h='<tr><th colspan="9"></th><th colspan="4" style="text-align:center;border-bottom:1px solid #444a53">Best dev NLL loss by evaluation split (lower is better)</th></tr>'
+    +'<tr><th>Compare</th><th>Training run</th><th>Status</th><th class="n">Parameters</th><th>Started (Vienna)</th><th>Finished / ETA</th><th class="n">Steps</th><th class="n">Images seen</th><th class="n">Train hours</th>'
+    +cols.map(c=>`<th class="n" title="${esc(SPLIT_NAME[c])}">${CH[c]}</th>`).join('')+'</tr>';
+  for(const r of runs){
+    const steps=(r.parent&&r.first_step>1000?fmtM(r.first_step)+'→':'')+fmtM(r.last_step)+(r.total_steps&&r.status!=='done'?' / '+fmtM(r.total_steps):'');
+    const fin=r.status==='running'?(r.eta_sec?'ETA '+fmtShort(new Date(Date.parse(H.pushed_at||H.received_at)+r.eta_sec*1000).toISOString()):'—'):fmtShort(r.finish);
+    h+=`<tr class="${PICK===r.id?'sel':''}"><td><input type="checkbox" data-cmp="${esc(r.id)}" ${SEL.has(r.id)?'checked':''}></td>`
+      +`<td><span class="sw" style="background:${runColor(r.id)}"></span><a data-show="${esc(r.id)}">${esc(r.label)}</a><div class="mut" style="font-size:11px">${esc(r.id)}${r.parent?' · from '+esc(r.parent):''}</div></td>`
+      +`<td><span class="pill ${r.status}">${r.status}</span></td><td class="n">${fmtParams(r.params)}</td><td>${fmtShort(r.start)}</td><td>${fin}</td>`
+      +`<td class="n">${steps}</td><td class="n">${fmtM(r.images)}</td><td class="n">${r.hours!=null?r.hours.toFixed(1):'—'}</td>`
+      +cols.map(c=>{ const b=bestOn(r,c); if(!b) return '<td class="n mut">—</td>'; const best=mins[c]!=null&&Math.abs(b.v-mins[c])<1e-9; return `<td class="n${best?' ok':''}">${b.v.toFixed(3)}${b.rescored?'†':''}</td>`; }).join('')
+      +'</tr>';
+  }
+  t.innerHTML=h;
+  t.querySelectorAll('input[data-cmp]').forEach(el=>el.onchange=()=>{ el.checked?SEL.add(el.dataset.cmp):SEL.delete(el.dataset.cmp); saveSel(); renderCompare(); });
+  t.querySelectorAll('a[data-show]').forEach(el=>el.onclick=()=>{ PICK=el.dataset.show; $('tr-pick').value=PICK; renderTop(); renderHistory(); $('tr-box').scrollIntoView({behavior:'smooth'}); });
+  const sub=$('trh-sub'); sub.textContent='all runs on the 3080 Ti, read-only · history pushed '+fmtVienna(H.pushed_at||H.received_at)+(H.age_ms>20*60000?' (stale)':'');
+}
+function saveSel(){ try{ localStorage.setItem('pxl_trc_sel',JSON.stringify([...SEL])); }catch{} }
+function pickPreset(kind){
+  const runs=H?.runs||[];
+  SEL=new Set(runs.filter(r=>kind==='all'||(kind==='v3'&&r.family==='v3')||(kind==='v1v2'&&r.family!=='v3')).map(r=>r.id));
+  $('trc-split').value=kind==='v1v2'?'old':(kind==='v3'?'iid':$('trc-split').value);
+  saveSel(); renderHistory(); renderCompare();
+}
+function renderCompare(){
+  const runs=(H?.runs||[]).filter(r=>SEL.has(r.id));
+  const split=$('trc-split').value, xk=Number($('trc-x').value), zoom=$('trc-zoom').checked;
+  const toPts=(arr)=>(arr||[]).filter(p=>p[xk]!=null&&p[3]!=null).map(p=>({x:p[xk],y:p[3]}));
+  const trainS=runs.map(r=>({label:r.label,color:runColor(r.id),pts:toPts(r.train),width:1.6}));
+  const devS=runs.filter(r=>r.dev&&r.dev[split]).map(r=>({label:r.label,color:runColor(r.id),pts:toPts(r.dev[split]),dots:true,width:2}));
+  const hl=$('trc-base').checked?baseLines(split):[];
+  drawChart($('trc-train'),trainS,{yd:3,legend:false,zoom,xLabel:xFmt(xk)});
+  drawChart($('trc-dev'),devS,{yd:3,legend:false,hlineText:false,zoom,xLabel:xFmt(xk),hlines:hl});
+  $('trc-train-cap').textContent='Train NLL vs '+XNAME[xk]+' (bucket means; each run on its own training data, so only a rough guide across versions)';
+  $('trc-dev-cap').innerHTML='Dev NLL on <b>'+esc(SPLIT_NAME[split])+'</b> vs '+XNAME[xk]+(hl.length?' · dashed = best checkpoints rescored on this same split':'');
+  $('trc-leg').innerHTML=legendHtml([...trainS],hl);
+  const miss=runs.filter(r=>!(r.dev&&r.dev[split])).map(r=>r.label);
+  $('trc-miss').textContent=(runs.length?'':'Tick runs in the table to compare them. ')
+    +(miss.length?('Not scored on the '+SPLIT_SHORT[split]+' split, so left out of the dev chart: '+miss.join(', ')+'. '):'')
+    +(xk===2?'Hours = training time inside that run (v1 continuations/cooldowns restart at 0 h; v2 includes its 1 h pilot). ':'')
+    +(xk!==2?'Steps / images are cumulative from the run the checkpoint started from (v1 continuations keep counting; v3 runs start at 0). ':'');
+}
+function cardsHtml(items){ return items.map(([k,v])=>`<div class="card"><div class="mut">${k}</div><div class="v">${v}</div></div>`).join(''); }
+function renderTop(){
+  const pick=$('tr-pick'), cards=$('tr-cards'), note=$('tr-note'), ck=$('tr-ckpt');
+  const runs=H?.runs||[];
+  const cur=pick.value;
+  pick.innerHTML=`<option value="">Live run${SNAP?.run?' — '+esc(SNAP.run):''}</option>`+runs.map(r=>`<option value="${esc(r.id)}">${esc(r.label)} (${esc(r.id)})</option>`).join('');
+  pick.value=runs.some(r=>r.id===cur)?cur:'';
+  PICK=pick.value;
+  if(!PICK) return renderLive();
+  const r=runs.find(x=>x.id===PICK);
+  const split=splitOfRun(r);
+  $('tr-sub').textContent=r.label+' · '+r.id+' · '+r.status+' · read-only';
+  $('tr-pick-note').innerHTML='<button id="tr-live">Back to live run</button>';
+  $('tr-live').onclick=()=>{ pick.value=''; PICK=''; renderTop(); renderHistory(); };
+  note.textContent='Saved history of '+r.id+' (from its metrics.jsonl on the 3080 Ti, last change '+fmtVienna(r.source_mtime)+'). Not auto-updating unless it is the live run.';
+  const lastTrain=(r.train||[]).slice(-1)[0];
+  const b=bestOn(r,split);
+  cards.innerHTML=cardsHtml([
+    ['Run status',r.status],['Parameters',fmtParams(r.params)],['Training steps',fmtInt(r.last_step)+(r.total_steps&&r.status!=='done'?' / '+fmtInt(r.total_steps):'')],
+    ['Images seen',fmtM(r.images)],['Training hours',r.hours!=null?r.hours.toFixed(1):'—'],['Started',fmtVienna(r.start)],['Finished',r.status==='done'?fmtVienna(r.finish):'—'],
+    ['Last train NLL',lastTrain?lastTrain[3].toFixed(4):'—'],['Best dev NLL ('+SPLIT_SHORT[split]+')',b?b.v.toFixed(4):'—'],
+  ]);
+  ck.textContent=r.arch?('Architecture: '+r.arch):'';
+  const train=(r.train||[]).map(p=>({x:p[0],y:p[3]}));
+  drawChart($('tr-train'),[{label:'train NLL',color:runColor(r.id),pts:train}],{yd:3,legend:true,zoom:true,xLabel:xFmt(0)});
+  $('tr-train-cap').textContent='Train NLL vs step — '+r.label;
+  const dev=((r.dev||{})[split]||[]).map(p=>({x:p[0],y:p[3]}));
+  const hl=baseLines(split);
+  drawChart($('tr-dev'),[{label:r.label,color:runColor(r.id),pts:dev,dots:true,width:2}],{yd:3,legend:false,hlineText:false,xLabel:xFmt(0),hlines:hl});
+  $('tr-dev-cap').innerHTML='Dev NLL vs step on <b>'+esc(SPLIT_NAME[split])+'</b>';
+  $('tr-dev-leg').innerHTML=legendHtml([{label:r.label,color:runColor(r.id)}],hl);
+  $('tr-sample-wrap').style.display='none';
+}
+function renderLive(){
+  const s=SNAP, ref=REF, note=$('tr-note'), cards=$('tr-cards'), ck=$('tr-ckpt');
+  $('tr-pick-note').textContent='';
+  if(!s){
+    $('tr-sub').textContent='read-only';
+    cards.innerHTML='<div class="card"><div class="mut">Run status</div><div class="v">waiting for first push</div></div>';
+    note.textContent='No snapshot yet. The pusher on the 3080 Ti posts about every 5 minutes.';
+    return;
+  }
+  const hr=(H?.runs||[]).find(r=>r.id===s.run);
+  const isV3=hr?hr.family==='v3':/^v3-/.test(s.run||'');
+  const split=isV3?'iid':'old';
+  const pctDone=s.total_steps&&s.step!=null?(100*s.step/s.total_steps):null;
+  const stale=!!s.stale;
+  $('tr-sub').textContent='live: '+(hr?hr.label+' · ':'')+(s.run||'?')+' · read-only';
+  note.innerHTML=(stale?'<span class="warn">Stale: last update was more than 15 minutes ago.</span> ':'')
+    +'Live snapshot of '+esc(s.run||'?')+'. Last update '+fmtVienna(s.received_at||s.pushed_at)+' (UTC). Auto-refresh 60s. Stats only — this never changes or loads the model.';
+  const eta=s.eta_vienna?fmtVienna(s.eta_vienna):(s.eta_sec?fmtVienna(new Date(Date.now()+s.eta_sec*1000).toISOString()):'—');
+  const liveItems=[
+    ['Run status',(stale?'stale / ':'')+(s.status||'unknown')],
+    ['Training step',`${fmtInt(s.step)} / ${fmtInt(s.total_steps)}`],
+    ['Completion',pctDone==null?'—':pctDone.toFixed(1)+'%'],
+    ['Epoch',fmtNum(s.epoch,2)],
+    ['Speed (steps/s)',fmtNum(s.steps_per_sec,2)],
+    ['Estimated finish (ETA)',eta],
+    ['Train NLL',fmtNum(s.train_nll,4)],
+    ['Dev NLL ('+SPLIT_SHORT[split]+')',fmtNum(s.last_dev_nll,4)],
+    ['Best dev ('+SPLIT_SHORT[split]+')',fmtNum(s.best_dev_nll,4)],
+    ['GPU VRAM',s.vram_mib?Math.round(s.vram_mib)+' MiB':'—'],
+  ];
+  cards.innerHTML=cardsHtml(liveItems);
+  // Also update Overview training summary card & nav badge
+  $('nav-badge-tr').textContent=s.status||fmtM(s.step);
+  if($('ov-tr-metrics')){
+    $('ov-tr-metrics').innerHTML=cardsHtml([
+      ['Active / latest run', esc(s.run||'?')],
+      ...liveItems.slice(0,8)
+    ]);
+  }
+  const ch=s.checkpoints||{};
+  const names=[ch.best&&('best: '+ch.best), ch.last&&('last: '+ch.last), ...((ch.rolling||[]).map(n=>'rolling: '+n)), ...((ch.perm||[]).map(n=>'perm: '+n))].filter(Boolean);
+  ck.textContent=names.length?('Checkpoints: '+names.join(' · ')):'Checkpoints: —';
+  const color=hr?runColor(hr.id):'#3dd68c';
+  const train=(s.train_curve||[]).filter(p=>p.step!=null&&p.train_nll!=null).map(p=>({x:p.step,y:p.train_nll}));
+  drawChart($('tr-train'),[{label:'train NLL',color:'#7aa2ff',pts:train}],{yd:3,legend:true,zoom:true,xLabel:x=>fmtM(x)});
+  $('tr-train-cap').textContent='Train NLL vs step — '+(s.run||'');
+  let series, hl;
+  if(isV3){
+    const dev=(s.dev_curve||[]).filter(p=>p.step!=null&&p.dev_nll!=null).map(p=>({x:p.step,y:p.dev_nll}));
+    series=[{label:(hr?hr.label:s.run)+' dev',color,pts:dev,dots:true,width:2}];
+    hl=baseLines('iid');
+  } else {
+    const dev=(s.dev_curve||[]).filter(p=>p.step!=null&&p.dev_nll!=null).map(p=>({x:p.step,y:p.dev_nll}));
+    const l10=(ref.l10_baseline||[]).map(p=>({x:p.step,y:p.dev_nll}));
+    series=[{label:(s.run||'run')+' dev',color,pts:dev,dots:true,width:2},{label:'v1 base (L10)',color:'#7aa2ff',pts:l10,dots:true,width:2}];
+    hl=[{y:ref.cooldown_a??1.346102,color:'#ffcf6e',label:'v1 cooldown A (old dev)'},{y:ref.final32??1.356390,color:'#ff8a8a',label:'v1 final32 (old dev)'}];
+  }
+  drawChart($('tr-dev'),series,{yd:3,legend:false,hlineText:false,xLabel:x=>fmtM(x),hlines:hl});
+  $('tr-dev-cap').innerHTML='Dev NLL vs step on <b>'+esc(SPLIT_NAME[split])+'</b>'+(isV3?' · dashed = older models rescored on this same split':'');
+  $('tr-dev-leg').innerHTML=legendHtml(series,hl);
+  const img=$('tr-sample'), wrap=$('tr-sample-wrap'), cap=$('tr-sample-cap');
+  if(s.has_sample){
+    wrap.style.display='block';
+    cap.textContent='Latest sample grid'+(s.sample_name?(' — '+s.sample_name):'');
+    const src='/api/admin/training/sample.png?t='+encodeURIComponent(s.received_at||Date.now());
+    if(img.getAttribute('src')!==src) img.src=src;
+  } else { wrap.style.display='none'; }
+}
+async function loadTraining(){
+  try{
+    const [r1,r2]=await Promise.all([
+      fetch('/api/admin/training',{credentials:'same-origin'}),
+      fetch('/api/admin/training/runs',{credentials:'same-origin'}),
+    ]);
+    if(r1.status===401) return;
+    const j=await r1.json();
+    SNAP=j.snapshot; REF=j.references||{};
+    if(r2.ok){ const k=await r2.json(); H=k.history||null; }
+    if(SEL===null){
+      let saved=null; try{ saved=JSON.parse(localStorage.getItem('pxl_trc_sel')||'null'); }catch{}
+      SEL=new Set(Array.isArray(saved)&&saved.length?saved:(H?.runs||[]).filter(r=>r.family==='v3').map(r=>r.id));
+    }
+    renderTop(); renderHistory(); renderCompare();
+  }catch(e){
+    $('tr-note').textContent='Could not load training snapshot.';
+  }
+}
+$('tr-pick').onchange=()=>{ PICK=$('tr-pick').value; renderTop(); renderHistory(); };
+for(const id of ['trc-split','trc-x','trc-base','trc-zoom']) $(id).onchange=()=>renderCompare();
+document.querySelectorAll('[data-pick]').forEach(b=>b.onclick=()=>pickPreset(b.dataset.pick));
+// ----- Training Data Flywheel v2 diagnostics -----
+let FW=null;
+function fmtAgo(iso){
+  if(!iso) return '—';
+  const ms=Date.now()-new Date(iso).getTime();
+  if(!isFinite(ms)) return String(iso).slice(0,16);
+  const s=Math.max(0,Math.floor(ms/1000));
+  if(s<60) return s+'s ago';
+  const m=Math.floor(s/60);
+  if(m<60) return m+'m ago';
+  const h=Math.floor(m/60);
+  if(h<48) return h+'h ago';
+  return Math.floor(h/24)+'d ago';
+}
+function renderFlywheel(){
+  const cards=$('fw-summary-cards'), sub=$('fw-sub');
+  const dCards=$('fw-data-cards'), dSub=$('fw-data-sub');
+  if(!FW){
+    if(sub) sub.textContent='Flywheel diagnostics endpoint not active yet.';
+    if(cards) cards.innerHTML='';
+    if(dCards) dCards.innerHTML='<div class="card"><div class="mut">Flywheel v2</div><div class="v mut">inactive</div></div>';
+    return;
+  }
+  const s=FW.summary||{};
+  if(sub) sub.textContent=`${fmtInt(s.total_candidates_archived)} jobs archived · ${fmtInt(s.total_events)} events · ${fmtInt(s.ab_queued_prompts)} A/B queued`;
+  if(dSub) dSub.textContent=`P90 reward threshold ${s.p90_threshold!=null?Number(s.p90_threshold).toFixed(3):'—'}`;
+  const cardItems=[
+    ['Archived 20-cand jobs', fmtInt(s.total_candidates_archived)],
+    ['Flywheel events logged', fmtInt(s.total_events)],
+    ['"None" w/ reason tag', `${fmtInt(s.none_tagged_total)} / ${fmtInt(s.none_total)}`],
+    ['Rank 5–20 pick rate', s.rank_discrepancy_rate!=null?pct(s.rank_discrepancy_rate):'—'],
+    ['Gold 16×16 edits (total)', `${fmtInt(s.gold_polish_edits)} / ${fmtInt(s.total_edits)}`],
+    ['Edit → Share / Retry', `${fmtInt(s.edit_to_share_count)} share · ${fmtInt(s.retry_chains)} retry`]
+  ];
+  if(cards) cards.innerHTML=cardsHtml(cardItems);
+  if(dCards) dCards.innerHTML=cardsHtml([
+    ['Archived 20-cand .cands.gz', fmtInt(s.total_candidates_archived)],
+    ['Gold 16×16 polish edits', fmtInt(s.gold_polish_edits)],
+    ['"None" votes w/ reason', `${fmtInt(s.none_tagged_total)} / ${fmtInt(s.none_total)}`],
+    ['A/B queued prompts', fmtInt(s.ab_queued_prompts)]
+  ]);
+
+  // "None are good" reason breakdown
+  const reasons=FW.none_reasons||[];
+  const nrTotal=reasons.reduce((a,r)=>a+(r.count||0),0);
+  if($('fw-none-total')) $('fw-none-total').textContent=nrTotal?`${nrTotal} tagged`:'0 tagged';
+  if($('fw-none-reasons')){
+    $('fw-none-reasons').innerHTML=reasons.length
+      ? reasons.map(r=>`<div class="fw-bar-row"><span><span class="fw-reason">${esc(r.label||r.reason)}</span></span><div class="fw-bar-track"><div class="fw-bar-fill bad" style="width:${Math.max(4,Math.round((r.pct||0)*100))}%"></div></div><span class="n mut">${fmtInt(r.count)} (${Math.round((r.pct||0)*100)}%)</span></div>`).join('')
+      : '<div class="mut">No tagged "None" votes yet.</div>';
+  }
+
+  // Reward-rank discrepancy (1-4 vs 5-20)
+  const rd=FW.rank_discrepancy||{};
+  if($('fw-rank-rate')) $('fw-rank-rate').textContent=rd.total_grid_picks?`${rd.rank_5_20_picks} / ${rd.total_grid_picks} in 5–20 (${pct(rd.discrepancy_rate||0)})`:'No All-20 picks yet';
+  if($('fw-rank-stats')) $('fw-rank-stats').innerHTML=(rd.rank_histogram||[]).map(b=>`<span class="fw-reason" style="margin-right:4px">${esc(b.bucket)}: <b>${b.count}</b></span>`).join('');
+  if($('fw-rank-table')){
+    const rRows=rd.recent||[];
+    $('fw-rank-table').innerHTML=`<tr><th>Pick</th><th>Prompt</th><th>Rank</th><th>Score vs #1</th><th>User</th></tr>`+(
+      rRows.length?rRows.map(r=>`<tr>
+        <td>${r.thumb_url?`<img class="chat-thumb" src="${esc(r.thumb_url)}" alt="">`:`<span class="chat-thumb chat-thumb-empty"></span>`}</td>
+        <td class="fw-wrap-prompt"><b>${esc(r.prompt||'')}</b></td>
+        <td><span class="warn"><b>#${r.rank}</b></span> <span class="mut">(idx ${r.candidate_idx})</span></td>
+        <td class="n mut">${r.chosen_score!=null?Number(r.chosen_score).toFixed(3):'—'} vs ${r.top1_score!=null?Number(r.top1_score).toFixed(3):'—'}</td>
+        <td class="mut">${esc(r.name||'—')}</td>
+      </tr>`).join(''):`<tr><td colspan="5" class="mut">No rank 5–20 picks recorded yet.</td></tr>`
+    );
+  }
+
+  // High-reward "None" false positives
+  const fp=FW.false_positives||{};
+  if($('fw-fp-sub')) $('fw-fp-sub').textContent=fp.p90_threshold!=null?`Top-4 reward ≥ ${Number(fp.p90_threshold).toFixed(3)} (P90 of ${fp.total_none_with_scores||0} None votes)`:'Waiting for scored "None" votes';
+  if($('fw-fp-table')){
+    const fpItems=fp.items||[];
+    $('fw-fp-table').innerHTML=`<tr><th>Top #1</th><th>Prompt</th><th>Top-4 Max Reward</th><th>Reason</th><th>Labeller</th><th>When</th></tr>`+(
+      fpItems.length?fpItems.map(r=>`<tr>
+        <td>${r.thumb_url?`<img class="chat-thumb" src="${esc(r.thumb_url)}" alt="">`:`<span class="chat-thumb chat-thumb-empty"></span>`}</td>
+        <td class="fw-wrap-prompt"><b>${esc(r.prompt||'')}</b></td>
+        <td class="n bad"><b>${r.top4_max_reward!=null?Number(r.top4_max_reward).toFixed(3):'—'}</b></td>
+        <td>${r.none_reason?`<span class="fw-reason">${esc(r.none_reason)}</span>`:`<span class="mut">untagged</span>`}</td>
+        <td>${esc(r.name||r.lid||'—')} <span class="mut" style="font-size:11px">(${esc(r.trust_tier||'auto')})</span></td>
+        <td class="mut">${esc(fmtAgo(r.ts))}</td>
+      </tr>`).join(''):`<tr><td colspan="6" class="mut">No high-reward "None" false positives recorded yet.</td></tr>`
+    );
+  }
+
+  // Failing prompts + Queue for A/B
+  if($('fw-failing-table')){
+    const fRows=FW.failing_prompts||[];
+    $('fw-failing-table').innerHTML=`<tr><th>Prompt</th><th class="n">None / Runs</th><th>Top reason</th><th>A/B Queue</th></tr>`+(
+      fRows.length?fRows.map(r=>`<tr>
+        <td class="fw-wrap-prompt"><b>${esc(r.prompt)}</b></td>
+        <td class="n"><span class="${r.none_rate>=0.5?'bad':'warn'}"><b>${r.none_count} / ${r.total_runs}</b></span> (${Math.round((r.none_rate||0)*100)}%)</td>
+        <td>${r.top_reason?`<span class="fw-reason">${esc(r.top_reason_label||r.top_reason)}</span>`:`<span class="mut">—</span>`}</td>
+        <td><button type="button" class="fw-qbtn ${r.queued_ab?'done':''}" data-queue-prompt="${esc(r.prompt)}" ${r.queued_ab?'disabled':''}>${r.queued_ab?'Queued ✓':'Queue for A/B'}</button></td>
+      </tr>`).join(''):`<tr><td colspan="4" class="mut">No prompts with repeated "None" votes yet.</td></tr>`
+    );
+    $('fw-failing-table').querySelectorAll('[data-queue-prompt]').forEach(btn=>{
+      btn.onclick=async()=>{
+        const prompt=btn.dataset.queuePrompt;
+        btn.disabled=true; btn.textContent='Queueing…';
+        try{
+          const res=await fetch('/api/admin/flywheel/queue_ab',{method:'POST',credentials:'same-origin',headers:{'Content-Type':'application/json'},body:JSON.stringify({prompt})});
+          const j=await res.json().catch(()=>({}));
+          if(!res.ok){ alert(j.error||'Could not queue prompt'); btn.disabled=false; btn.textContent='Queue for A/B'; return; }
+          btn.textContent='Queued ✓'; btn.classList.add('done');
+          loadFlywheel();
+        }catch{ btn.disabled=false; btn.textContent='Queue for A/B'; }
+      };
+    });
+  }
+
+  // Recent user 16x16 edits
+  const edits=FW.recent_edits||[];
+  if($('fw-edits-sub')) $('fw-edits-sub').textContent=`${edits.length} latest edits`;
+  if($('fw-edits-table')){
+    $('fw-edits-table').innerHTML=`<tr><th>Sprite</th><th>Prompt</th><th>Diff</th><th>Mode</th><th>Train</th></tr>`+(
+      edits.length?edits.map(e=>`<tr>
+        <td>${e.png_url?`<img class="chat-thumb" src="${esc(e.png_url)}" alt="">`:`<span class="chat-thumb chat-thumb-empty"></span>`}</td>
+        <td class="fw-wrap-prompt"><b>${esc(e.prompt||'remix')}</b></td>
+        <td><span class="fw-diff">${e.diff_pixels} px Δ</span> <span class="mut">(${e.opaque_px} px)</span></td>
+        <td class="mut">${esc(e.action||'save')} · ${e.ops_count||0} ops</td>
+        <td>${e.opt_in_train?'<span class="ok">opt-in</span>':'<span class="mut">private</span>'}</td>
+      </tr>`).join(''):`<tr><td colspan="5" class="mut">No 16×16 user edits saved yet.</td></tr>`
+    );
+  }
+}
+async function loadFlywheel(){
+  try{
+    const r=await fetch('/api/admin/flywheel',{credentials:'same-origin'});
+    if(!r.ok){ FW=null; renderFlywheel(); return; }
+    FW=await r.json();
+    renderFlywheel();
+  }catch(err){ console.error('Flywheel load/render error:', err); FW=null; renderFlywheel(); }
+}
+if($('fw-refresh')) $('fw-refresh').onclick=()=>loadFlywheel();
+
+/* ─── Comparison Grid Tool ─────────────────────────────────────────── */
+const CG_PRESETS_KEY='pxl_admin_grid_presets_v1';
+const CG_DRAFT_KEY='pxl_admin_grid_draft_v1';
+const CG_STARTER_PRESET={
+  name:'Starter: Wizard Hat (9x5)',
+  title:'Wizard Hat & Accessories',
+  subjects:[
+    'lamb',
+    'desert dragon',
+    'mud elemental',
+    'blobfish',
+    'carp',
+    'strongman',
+    'hot sauce bottle',
+    'ring of fire',
+    'bird mask',
+  ].join('\n'),
+  phrases:[
+    'plain',
+    'with a wizard hat',
+    'wearing a wizard hat',
+    'wearing a space helmet',
+    'with sunglasses',
+  ].join('\n'),
+  samples:3,
+  seed:'',
+  palette:'auto',
+  style:{ fill:'any', outline:'any', colours:'any' },
+};
+
+let cgCurrentGrid=null;
+let cgRenderedGridId=null;
+let cgCellKeys=new Map();
+let cgPollTimer=null;
+let cgZoom=3;
+let cgSelectedCell=null;
+let cgPaletteColors={};
+let cgPendingCond=null;
+let cgInitialized=false;
+
+function cgEsc(s){
+  return String(s??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
+}
+
+function cgParseLines(val){
+  return String(val||'').split(/\r?\n/).map(s=>s.replace(/\s+/g,' ').trim()).filter(Boolean);
+}
+
+function cgSetStatus(msg,isErr=false){
+  const el=$('cg-status-msg');
+  if(!el) return;
+  el.textContent=msg||'';
+  el.style.color=isErr?'var(--bad)':'var(--mut)';
+}
+
+function cgLoadStoredPresets(){
+  try{
+    const raw=localStorage.getItem(CG_PRESETS_KEY);
+    if(!raw) return [{ ...CG_STARTER_PRESET, saved_at:new Date().toISOString() }];
+    const parsed=JSON.parse(raw);
+    return Array.isArray(parsed)?parsed:[];
+  }catch{
+    return [];
+  }
+}
+
+function cgSaveStoredPresets(list){
+  try{ localStorage.setItem(CG_PRESETS_KEY, JSON.stringify(list)); }catch{}
+}
+
+function cgReadFormConfig(){
+  return {
+    title:($('cg-title')?.value||'').trim(),
+    subjects:$('cg-subjects')?.value||'',
+    phrases:$('cg-phrases')?.value||'',
+    samples:Number($('cg-samples')?.value||3),
+    seed:($('cg-seed')?.value||'').trim(),
+    palette:$('cg-palette')?.value||'auto',
+    style:{
+      fill:$('cg-style-fill')?.value||'any',
+      outline:$('cg-style-outline')?.value||'any',
+      colours:$('cg-style-colours')?.value||'any',
+    },
+  };
+}
+
+function cgSaveDraft(){
+  try{ localStorage.setItem(CG_DRAFT_KEY, JSON.stringify(cgReadFormConfig())); }catch{}
+}
+
+function cgApplyFormConfig(cfg){
+  if(!cfg||typeof cfg!=='object') return;
+  if($('cg-title')) $('cg-title').value=cfg.title??'';
+  if($('cg-subjects')) $('cg-subjects').value=Array.isArray(cfg.subjects)?cfg.subjects.join('\n'):(cfg.subjects??'');
+  if($('cg-phrases')) $('cg-phrases').value=Array.isArray(cfg.phrases)?cfg.phrases.join('\n'):(cfg.phrases??'');
+  if($('cg-samples')) $('cg-samples').value=String(cfg.samples??3);
+  if($('cg-seed')) $('cg-seed').value=(cfg.seed===null||cfg.seed===undefined)?'':String(cfg.seed);
+
+  const pal=cfg.palette||'auto';
+  const st=(cfg.style&&typeof cfg.style==='object')?cfg.style:{};
+  cgPendingCond={
+    palette:pal,
+    style:{
+      fill:st.fill||'any',
+      outline:st.outline||'any',
+      colours:st.colours||'any',
+    },
+  };
+  const palSel=$('cg-palette');
+  if(palSel){
+    if([...palSel.options].some(o=>o.value===pal)) palSel.value=pal;
+  }
+  for(const k of ['fill','outline','colours']){
+    const sEl=$('cg-style-'+k);
+    const val=cgPendingCond.style[k];
+    if(sEl && [...sEl.options].some(o=>o.value===val)) sEl.value=val;
+  }
+  cgRenderPaletteSwatches();
+  updateGridEstimate();
+}
+
+function cgRefreshPresetSelect(selectName=''){
+  const sel=$('cg-preset-select');
+  if(!sel) return;
+  const presets=cgLoadStoredPresets();
+  const prev=selectName||sel.value;
+  sel.innerHTML='<option value="">— Select preset —</option>'+presets.map(p=>
+    `<option value="${cgEsc(p.name)}">${cgEsc(p.name)}</option>`
+  ).join('');
+  if(prev && presets.some(p=>p.name===prev)) sel.value=prev;
+}
+
+function cgRenderPaletteSwatches(){
+  const host=$('cg-palette-swatches');
+  const sel=$('cg-palette');
+  if(!host||!sel) return;
+  const cols=cgPaletteColors[sel.value];
+  if(!Array.isArray(cols)||!cols.length){
+    host.innerHTML='';
+    return;
+  }
+  host.innerHTML=cols.slice(0,24).map(c=>
+    `<span class="cg-swatch" style="background:${cgEsc(c)}" title="${cgEsc(c)}"></span>`
+  ).join('');
+}
+
+function syncGridCondOptions(){
+  const cond=CHAT_INFO?.cond;
+  if(!cond) return;
+
+  const palSel=$('cg-palette');
+  if(palSel){
+    const wanted=(cgPendingCond&&cgPendingCond.palette)||palSel.value||'auto';
+    cgPaletteColors={};
+    const opts=[{ value:'auto', label:'auto (model chooses)' }];
+    const rawP=cond.palettes;
+    if(Array.isArray(rawP)){
+      for(const item of rawP){
+        if(typeof item==='string'){
+          if(item!=='auto') opts.push({ value:item, label:item });
+        }else if(item&&typeof item==='object'){
+          const id=String(item.id??item.name??item.key??'');
+          if(!id||id==='auto') continue;
+          const colors=Array.isArray(item.colors)?item.colors:(Array.isArray(item.palette)?item.palette:null);
+          if(colors) cgPaletteColors[id]=colors;
+          const countTxt=colors?` (${colors.length}c)`:'';
+          opts.push({ value:id, label:(item.label||item.name||id)+countTxt });
+        }
+      }
+    }else if(rawP&&typeof rawP==='object'){
+      for(const [id,val] of Object.entries(rawP)){
+        if(id==='auto') continue;
+        const colors=Array.isArray(val)?val:(Array.isArray(val?.colors)?val.colors:null);
+        if(colors) cgPaletteColors[id]=colors;
+        const label=val?.label||val?.name||id;
+        const countTxt=colors?` (${colors.length}c)`:'';
+        opts.push({ value:id, label:label+countTxt });
+      }
+    }
+    palSel.innerHTML=opts.map(o=>`<option value="${cgEsc(o.value)}">${cgEsc(o.label)}</option>`).join('');
+    if(opts.some(o=>o.value===wanted)) palSel.value=wanted;
+    else palSel.value='auto';
+    cgRenderPaletteSwatches();
+  }
+
+  const rawS=cond.style||{};
+  for(const k of ['fill','outline','colours']){
+    const sel=$('cg-style-'+k);
+    if(!sel) continue;
+    const wanted=(cgPendingCond?.style?.[k])||sel.value||'any';
+    const rawList=Array.isArray(rawS[k])?rawS[k]:(Array.isArray(rawS[k]?.values)?rawS[k].values:[]);
+    const seen=new Set(['any']);
+    let html='<option value="any">any</option>';
+    for(const v of rawList){
+      const val=String(typeof v==='object'?(v.id??v.value??v.name??''):v);
+      const lbl=String(typeof v==='object'?(v.label??v.name??val):v);
+      if(!val||seen.has(val)) continue;
+      seen.add(val);
+      html+=`<option value="${cgEsc(val)}">${cgEsc(lbl)}</option>`;
+    }
+    sel.innerHTML=html;
+    if(seen.has(wanted)) sel.value=wanted;
+    else sel.value='any';
+  }
+}
+
+function updateGridEstimate(){
+  const subj=cgParseLines($('cg-subjects')?.value||'');
+  const phr=cgParseLines($('cg-phrases')?.value||'');
+  const rawSamp=Number($('cg-samples')?.value);
+  const rawSeed=($('cg-seed')?.value||'').trim();
+
+  if($('cg-subj-count')) $('cg-subj-count').textContent=`${subj.length} row${subj.length===1?'':'s'}`;
+  if($('cg-phr-count')) $('cg-phr-count').textContent=`${phr.length} col${phr.length===1?'':'s'}`;
+
+  const cells=subj.length*phr.length;
+  const errs=[];
+  if(subj.length<1) errs.push('need >= 1 subject');
+  if(subj.length>50) errs.push('max 50 subjects');
+  if(phr.length<1) errs.push('need >= 1 variant phrase');
+  if(phr.length>30) errs.push('max 30 phrases');
+  if(cells>250) errs.push(`max 250 cells (currently ${cells})`);
+  if(!Number.isInteger(rawSamp)||rawSamp<1||rawSamp>8) errs.push('samples must be 1–8');
+  if(rawSeed!==''&&(!Number.isInteger(Number(rawSeed))||!Number.isSafeInteger(Number(rawSeed)))){
+    errs.push('seed must be an integer');
+  }
+
+  const samples=Number.isInteger(rawSamp)?rawSamp:3;
+  const sprites=cells*Math.max(1,Math.min(8,samples));
+  const navBadge=$('nav-badge-grid');
+  if(navBadge&&(!cgCurrentGrid||cgCurrentGrid.status==='done'||cgCurrentGrid.status==='partial'||cgCurrentGrid.status==='error')){
+    navBadge.textContent=cells?`${subj.length}×${phr.length}`:'—';
+  }
+
+  const box=$('cg-cost-box');
+  if(box){
+    const exS=subj[0]||'lamb';
+    const exP=phr[0]||'plain';
+    const exPrompt=(exP.toLowerCase()==='plain')?exS:`${exS} ${exP}`;
+    const errHtml=errs.length?`<div class="cg-cost-err">Cannot generate: ${cgEsc(errs.join('; '))}</div>`:'';
+    box.innerHTML=
+      `<div><strong>${subj.length} rows × ${phr.length} cols = ${cells} cells</strong> · <strong>${cells} job${cells===1?'':'s'}</strong> <span style="color:var(--mut)">(${sprites} sprites at ${samples}/cell)</span></div>`+
+      `<div class="mut">1 chat job queued per cell sequentially (yields to live chat queue) · e.g. cell (1,1) prompt: <code>${cgEsc(exPrompt)}</code></div>`+
+      errHtml;
+  }
+  if($('cg-generate')) $('cg-generate').disabled=errs.length>0;
+}
+
+function cgFormatCondSummary(cond){
+  if(!cond||typeof cond!=='object') return 'auto cond';
+  const parts=[`palette:${cond.palette||'auto'}`];
+  const st=cond.style||{};
+  for(const k of ['fill','outline','colours']){
+    if(st[k]&&st[k]!=='any') parts.push(`${k}:${st[k]}`);
+  }
+  return parts.join(', ');
+}
+
+function cgApplyZoom(z){
+  cgZoom=Math.max(1,Math.min(6,Number(z)||3));
+  const wrap=$('cg-sheet-wrap');
+  if(wrap) wrap.style.setProperty('--cg-zoom', String(cgZoom));
+  document.querySelectorAll('.cg-zoom-btn').forEach(btn=>{
+    btn.classList.toggle('active', Number(btn.dataset.zoom)===cgZoom);
+  });
+}
+
+function cgRenderCellInner(cell,samples){
+  const n=Math.max(1,Number(samples||3));
+  if(!cell) return '';
+  if(cell.status==='error'){
+    return `<div class="cg-samples-row" title="${cgEsc(cell.error||'Cell failed')}"><span class="cg-pill err">error</span></div>`;
+  }
+  const imgs=Array.isArray(cell.images)?cell.images:[];
+  let html='<div class="cg-samples-row">';
+  for(let i=0;i<n;i++){
+    const im=imgs[i];
+    const src=typeof im==='string'?im:(im&&(im.img||im.dataUrl||im.url||im.src));
+    if(src){
+      html+=`<span class="cg-sprite-slot ready"><img class="cg-sprite" src="${cgEsc(src)}" alt="${cgEsc(cell.prompt)}" title="${cgEsc(cell.prompt)} · rank #${cgEsc(im?.rank??(i+1))}"></span>`;
+    }else{
+      const marker=(cell.status==='running'&&i===0)?'…':(cell.status==='done'?'—':'·');
+      html+=`<span class="cg-sprite-slot" title="${cgEsc(cell.prompt)} (${cgEsc(cell.status)})"><span class="cg-slot-dot">${marker}</span></span>`;
+    }
+  }
+  html+='</div>';
+  return html;
+}
+
+function cgUpdateInspector(grid,r,c){
+  const box=$('cg-inspector');
+  if(!box||!grid) return;
+  const cell=grid.cells?.[r]?.[c];
+  if(!cell) return;
+  const ranks=(cell.images||[]).map((im,i)=>{
+    const sc=(im.score!==null&&im.score!==undefined)?` (${Number(im.score).toFixed(2)})`:'';
+    return `#${im.rank??(i+1)}${sc}`;
+  }).join(', ');
+  box.innerHTML=
+    `<span><strong>Cell (${r+1},${c+1}):</strong> <code>${cgEsc(cell.prompt)}</code></span>`+
+    `<span class="cg-pill ${cell.status==='done'?'ok':(cell.status==='error'?'err':'run')}">${cgEsc(cell.status)}</span>`+
+    `<span><strong>Job:</strong> <code>${cgEsc(cell.job_id||'—')}</code></span>`+
+    `<span><strong>Seed:</strong> ${cgEsc(cell.seed===null||cell.seed===undefined?'random':cell.seed)}</span>`+
+    (ranks?`<span><strong>Shown:</strong> ${cgEsc(ranks)}</span>`:'')+
+    (cell.error?`<span style="color:var(--bad)"><strong>Error:</strong> ${cgEsc(cell.error)}</span>`:'');
+}
+
+function renderGridResult(grid){
+  if(!grid) return;
+  cgCurrentGrid=grid;
+
+  const card=$('cg-result-card');
+  if(card) card.style.display='block';
+  if($('cg-sheet-title-text')) $('cg-sheet-title-text').textContent=grid.title||'Comparison Grid';
+  if($('cg-result-heading')) $('cg-result-heading').textContent=grid.title||'Rendered Grid';
+
+  const rows=Array.isArray(grid.rows)?grid.rows:[];
+  const cols=Array.isArray(grid.columns)?grid.columns:[];
+  const seedTxt=(grid.seed===null||grid.seed===undefined)?'random seed':`seed ${grid.seed}`;
+  const metaTxt=`${rows.length}×${cols.length} · ${grid.samples} sample${grid.samples===1?'':'s'}/cell · ${seedTxt} · ${cgFormatCondSummary(grid.cond)}`;
+  if($('cg-result-meta')) $('cg-result-meta').textContent=metaTxt;
+  if($('cg-sheet-sub')) $('cg-sheet-sub').textContent=metaTxt;
+
+  const expBtn1=$('cg-export-png');
+  const expBtn2=$('cg-export-png-2');
+  if(expBtn1) expBtn1.disabled=false;
+  if(expBtn2) expBtn2.disabled=false;
+
+  // Progress bar
+  const progWrap=$('cg-progress-wrap');
+  const progPill=$('cg-progress-pill');
+  const progText=$('cg-progress-text');
+  const progId=$('cg-progress-id');
+  const progBar=$('cg-progress-bar');
+  const navBadge=$('nav-badge-grid');
+  const total=Number(grid.total_cells||(rows.length*cols.length)||0);
+  const done=(grid.completed_cells||0)+(grid.failed_cells||0);
+  const pct=total>0?Math.round((done/total)*100):0;
+
+  if(progWrap) progWrap.style.display='block';
+  if(progBar) progBar.style.width=pct+'%';
+  if(progId) progId.textContent=grid.grid_id||'';
+  if(progPill){
+    progPill.textContent=grid.status==='done'?'Done':(grid.status==='partial'?'Partial':(grid.status==='error'?'Error':(grid.status==='running'?'Running':'Queued')));
+    progPill.className='cg-pill '+(grid.status==='done'?'ok':((grid.status==='partial'||grid.status==='error')?'err':'run'));
+  }
+  if(progText){
+    const act=grid.active_cell?` · active: "${grid.active_cell.prompt}" (row ${grid.active_cell.row+1}, col ${grid.active_cell.col+1})`:'';
+    const failTxt=grid.failed_cells?` · ${grid.failed_cells} failed`:'';
+    progText.textContent=`${grid.completed_cells||0} / ${total} cells completed (${pct}%)${failTxt}${act}`;
+  }
+  if(navBadge){
+    navBadge.textContent=(grid.status==='done'||grid.status==='partial'||grid.status==='error')?`${rows.length}×${cols.length}`:`${done}/${total}`;
+  }
+
+  const mount=$('cg-grid-mount');
+  if(!mount) return;
+
+  // Incremental cell update if same grid already mounted
+  const canPatch=(cgRenderedGridId===grid.grid_id && mount.querySelector('table.cg-table'));
+  if(canPatch){
+    for(let r=0;r<rows.length;r++){
+      for(let c=0;c<cols.length;c++){
+        const cell=grid.cells?.[r]?.[c];
+        if(!cell) continue;
+        const key=`${cell.status}:${(cell.images||[]).length}:${cell.job_id||''}:${cell.error||''}`;
+        const prevKey=cgCellKeys.get(`${r},${c}`);
+        if(prevKey!==key){
+          cgCellKeys.set(`${r},${c}`, key);
+          const td=mount.querySelector(`td.cg-cell[data-r="${r}"][data-c="${c}"]`);
+          if(td){
+            const isSel=(cgSelectedCell&&cgSelectedCell.r===r&&cgSelectedCell.c===c);
+            td.className='cg-cell'+(cell.status==='running'?' running':'')+(cell.status==='error'?' error':'')+(isSel?' selected':'');
+            td.innerHTML=cgRenderCellInner(cell,grid.samples);
+          }
+        }
+      }
+    }
+    if(cgSelectedCell) cgUpdateInspector(grid,cgSelectedCell.r,cgSelectedCell.c);
+    return;
+  }
+
+  cgRenderedGridId=grid.grid_id;
+  cgCellKeys.clear();
+  cgSelectedCell=null;
+
+  let html='<table class="cg-table"><thead><tr><th class="cg-corner">Subject \\ Variant</th>';
+  for(const col of cols){
+    const hasCount=(col.train_count!==null&&col.train_count!==undefined&&Number.isFinite(Number(col.train_count)));
+    const tcTxt=hasCount?String(col.train_count):'n/a';
+    html+=`<th class="cg-col-hdr"><div class="cg-col-phrase">${cgEsc(col.phrase)}</div>`+
+      `<div class="cg-train-count${hasCount?'':' na'}">train: ${cgEsc(tcTxt)}</div></th>`;
+  }
+  html+='</tr></thead><tbody>';
+  for(let r=0;r<rows.length;r++){
+    html+=`<tr><th class="cg-row-label" scope="row" title="${cgEsc(rows[r])}">${cgEsc(rows[r])}</th>`;
+    for(let c=0;c<cols.length;c++){
+      const cell=grid.cells?.[r]?.[c];
+      const key=cell?`${cell.status}:${(cell.images||[]).length}:${cell.job_id||''}:${cell.error||''}`:'';
+      cgCellKeys.set(`${r},${c}`, key);
+      const cls='cg-cell'+(cell?.status==='running'?' running':'')+(cell?.status==='error'?' error':'');
+      html+=`<td class="${cls}" data-r="${r}" data-c="${c}">${cgRenderCellInner(cell,grid.samples)}</td>`;
+    }
+    html+='</tr>';
+  }
+  html+='</tbody></table>';
+  mount.innerHTML=html;
+
+  mount.querySelectorAll('td.cg-cell').forEach(td=>{
+    td.addEventListener('click',()=>{
+      const r=Number(td.dataset.r);
+      const c=Number(td.dataset.c);
+      cgSelectedCell={ r, c };
+      mount.querySelectorAll('td.cg-cell.selected').forEach(el=>el.classList.remove('selected'));
+      td.classList.add('selected');
+      cgUpdateInspector(cgCurrentGrid,r,c);
+    });
+  });
+  cgApplyZoom(cgZoom);
+}
+
+function cgStopPolling(){
+  if(cgPollTimer){
+    clearInterval(cgPollTimer);
+    cgPollTimer=null;
+  }
+}
+
+async function cgFetchGrid(gridId){
+  const r=await fetch(`/api/admin/grid/${encodeURIComponent(gridId)}`,{ credentials:'same-origin' });
+  if(!r.ok){
+    const err=await r.json().catch(()=>({}));
+    throw new Error(err.error||`HTTP ${r.status}`);
+  }
+  return r.json();
+}
+
+function cgStartPolling(gridId){
+  cgStopPolling();
+  cgPollTimer=setInterval(async()=>{
+    try{
+      const g=await cgFetchGrid(gridId);
+      renderGridResult(g);
+      if(g.status==='done'||g.status==='partial'||g.status==='error'){
+        cgStopPolling();
+        cgSetStatus(`Grid ${g.grid_id} finished: ${g.completed_cells}/${g.total_cells} cells completed${g.failed_cells?` (${g.failed_cells} failed)`:''}.`, g.status==='error');
+        loadGridHistory(g.grid_id);
+      }
+    }catch(e){
+      cgStopPolling();
+      cgSetStatus('Polling stopped: '+(e?.message||e), true);
+    }
+  },250);
+}
+
+async function loadGridHistory(selectId=''){
+  const sel=$('cg-history');
+  if(!sel) return;
+  try{
+    const r=await fetch('/api/admin/grid?limit=25',{ credentials:'same-origin' });
+    if(!r.ok) return;
+    const data=await r.json();
+    const list=Array.isArray(data.grids)?data.grids:[];
+    const prev=selectId||sel.value||(cgCurrentGrid?.grid_id||'');
+    sel.innerHTML='<option value="">— Select saved grid —</option>'+list.map(g=>{
+      const label=`${g.title} (${g.rows_count}×${g.cols_count}, ${g.completed_cells}/${g.total_cells} ${g.status})`;
+      return `<option value="${cgEsc(g.grid_id)}">${cgEsc(label)}</option>`;
+    }).join('');
+    if(prev&&list.some(g=>g.grid_id===prev)) sel.value=prev;
+  }catch{}
+}
+
+async function cgGenerate(){
+  cgSetStatus('');
+  const cfg=cgReadFormConfig();
+  const subjects=cgParseLines(cfg.subjects);
+  const phrases=cgParseLines(cfg.phrases);
+  const body={
+    title:cfg.title||'Comparison Grid',
+    subjects,
+    phrases,
+    samples:cfg.samples,
+    seed:cfg.seed===''?undefined:Number(cfg.seed),
+    palette:cfg.palette,
+    style:cfg.style,
+  };
+  const btn=$('cg-generate');
+  if(btn) btn.disabled=true;
+  try{
+    const r=await fetch('/api/admin/grid',{
+      method:'POST',
+      credentials:'same-origin',
+      headers:{ 'Content-Type':'application/json' },
+      body:JSON.stringify(body),
+    });
+    const data=await r.json().catch(()=>({}));
+    if(!r.ok){
+      cgSetStatus(data.error||`Failed (${r.status})`, true);
+      updateGridEstimate();
+      return;
+    }
+    cgRenderedGridId=null;
+    renderGridResult(data);
+    cgSetStatus(`Queued grid ${data.grid_id} (${data.total_jobs} cells).`);
+    loadGridHistory(data.grid_id);
+    if(data.status!=='done'&&data.status!=='partial'&&data.status!=='error'){
+      cgStartPolling(data.grid_id);
+    }
+  }catch(e){
+    cgSetStatus('Failed to submit grid: '+(e?.message||e), true);
+  }finally{
+    updateGridEstimate();
+  }
+}
+
+async function cgExportPng(){
+  if(!cgCurrentGrid?.grid_id) return;
+  cgSetStatus('Rendering PNG (~1024px wide)…');
+  try{
+    const r=await fetch(`/api/admin/grid/${encodeURIComponent(cgCurrentGrid.grid_id)}/png`,{ credentials:'same-origin' });
+    if(!r.ok){
+      const data=await r.json().catch(()=>({}));
+      cgSetStatus(data.error||`PNG export failed (${r.status})`, true);
+      return;
+    }
+    const buf=await r.arrayBuffer();
+    const bytes=new Uint8Array(buf);
+    if(bytes.length<24||bytes[0]!==0x89||bytes[1]!==0x50||bytes[2]!==0x4e||bytes[3]!==0x47){
+      cgSetStatus('PNG export failed: server returned invalid image data.', true);
+      return;
+    }
+    const blob=new Blob([bytes],{ type:'image/png' });
+    const url=URL.createObjectURL(blob);
+    const a=document.createElement('a');
+    const slug=String(cgCurrentGrid.title||'grid').toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'')||'grid';
+    a.href=url;
+    a.download=`${slug}-${cgCurrentGrid.grid_id}.png`;
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    setTimeout(()=>URL.revokeObjectURL(url), 1000);
+    cgSetStatus(`Exported ${a.download} (${Math.round(bytes.length/1024)} KB).`);
+  }catch(e){
+    cgSetStatus('PNG export failed: '+(e?.message||e), true);
+  }
+}
+
+function initGridTool(){
+  if(cgInitialized) return;
+  cgInitialized=true;
+
+  // Ensure starter preset is persisted if nothing saved yet
+  if(!localStorage.getItem(CG_PRESETS_KEY)){
+    cgSaveStoredPresets([{ ...CG_STARTER_PRESET, saved_at:new Date().toISOString() }]);
+  }
+  cgRefreshPresetSelect();
+
+  let draft=null;
+  try{
+    const raw=localStorage.getItem(CG_DRAFT_KEY);
+    if(raw) draft=JSON.parse(raw);
+  }catch{}
+  cgApplyFormConfig(draft||CG_STARTER_PRESET);
+
+  for(const id of ['cg-title','cg-subjects','cg-phrases','cg-samples','cg-seed','cg-palette','cg-style-fill','cg-style-outline','cg-style-colours']){
+    const el=$(id);
+    if(!el) continue;
+    const handler=()=>{
+      if(id==='cg-palette') cgRenderPaletteSwatches();
+      if(['cg-palette','cg-style-fill','cg-style-outline','cg-style-colours'].includes(id)){
+        cgPendingCond={
+          palette:$('cg-palette')?.value||'auto',
+          style:{
+            fill:$('cg-style-fill')?.value||'any',
+            outline:$('cg-style-outline')?.value||'any',
+            colours:$('cg-style-colours')?.value||'any',
+          },
+        };
+      }
+      cgSaveDraft();
+      updateGridEstimate();
+    };
+    el.addEventListener('input', handler);
+    el.addEventListener('change', handler);
+  }
+
+  $('cg-generate')?.addEventListener('click', cgGenerate);
+  $('cg-export-png')?.addEventListener('click', cgExportPng);
+  $('cg-export-png-2')?.addEventListener('click', cgExportPng);
+
+  document.querySelectorAll('.cg-zoom-btn').forEach(btn=>{
+    btn.addEventListener('click',()=>cgApplyZoom(Number(btn.dataset.zoom)));
+  });
+
+  $('cg-preset-starter')?.addEventListener('click',()=>{
+    cgApplyFormConfig(CG_STARTER_PRESET);
+    cgSaveDraft();
+    cgSetStatus('Loaded starter 9×5 grid configuration.');
+  });
+
+  $('cg-preset-save')?.addEventListener('click',()=>{
+    const rawName=($('cg-preset-name')?.value||'').trim()||($('cg-title')?.value||'').trim()||'Custom preset';
+    const presets=cgLoadStoredPresets().filter(p=>p.name!==rawName);
+    presets.unshift({ name:rawName, ...cgReadFormConfig(), saved_at:new Date().toISOString() });
+    cgSaveStoredPresets(presets);
+    if($('cg-preset-name')) $('cg-preset-name').value=rawName;
+    cgRefreshPresetSelect(rawName);
+    cgSetStatus(`Saved preset "${rawName}" to localStorage.`);
+  });
+
+  $('cg-preset-load')?.addEventListener('click',()=>{
+    const name=$('cg-preset-select')?.value;
+    if(!name) return cgSetStatus('Select a preset first.', true);
+    const preset=cgLoadStoredPresets().find(p=>p.name===name);
+    if(!preset) return cgSetStatus('Preset not found.', true);
+    cgApplyFormConfig(preset);
+    if($('cg-preset-name')) $('cg-preset-name').value=preset.name;
+    cgSaveDraft();
+    cgSetStatus(`Loaded preset "${preset.name}".`);
+  });
+
+  $('cg-preset-delete')?.addEventListener('click',()=>{
+    const name=$('cg-preset-select')?.value;
+    if(!name) return cgSetStatus('Select a preset to delete.', true);
+    const presets=cgLoadStoredPresets().filter(p=>p.name!==name);
+    cgSaveStoredPresets(presets);
+    cgRefreshPresetSelect();
+    cgSetStatus(`Deleted preset "${name}".`);
+  });
+
+  $('cg-history')?.addEventListener('change',async(e)=>{
+    const gid=e.target.value;
+    if(!gid) return;
+    try{
+      cgStopPolling();
+      const g=await cgFetchGrid(gid);
+      cgRenderedGridId=null;
+      renderGridResult(g);
+      cgSetStatus(`Loaded grid ${g.grid_id}.`);
+      if(g.status!=='done'&&g.status!=='partial'&&g.status!=='error') cgStartPolling(g.grid_id);
+    }catch(err){
+      cgSetStatus('Failed to load grid: '+(err?.message||err), true);
+    }
+  });
+
+  $('cg-history-refresh')?.addEventListener('click',()=>loadGridHistory());
+
+  if(CHAT_INFO) syncGridCondOptions();
+  loadGridHistory();
+}
+
+const _load=load;
+load=()=>{ _load(); loadTraining(); loadChatInfo(); loadFlywheel(); if(typeof loadGridHistory==='function') loadGridHistory(); };
+if(trTimer) clearInterval(trTimer);
+trTimer=setInterval(()=>{ loadTraining(); loadChatInfo(); loadFlywheel(); }, 60000);
+initGridTool();
+load();
+
+</script></body></html>

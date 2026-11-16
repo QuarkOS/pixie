@@ -1,0 +1,4 @@
+# Optional local-only caption review; install with the project venv Python.
+transformers>=4.51,<5
+sentencepiece
+protobuf

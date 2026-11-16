@@ -1,0 +1,3 @@
+# Frozen holdout fingerprints require byte-identical checkouts.
+/holdout/blind-50.json -text
+/holdout/eval-50.json -text

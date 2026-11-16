@@ -1,0 +1,179 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,interactive-widget=resizes-content">
+<meta name="theme-color" content="#000000">
+<meta name="color-scheme" content="dark">
+<title>Pixie — Sprite chat</title>
+<link rel="preload" href="fonts/inter-latin.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="chat.css?v=20261113pdd1">
+<link rel="stylesheet" href="editor.css?v=20261112s2">
+</head>
+<body class="px-chat">
+<!-- Markup only: all styling lives in chat.css, all behaviour in chat.js (hooks are ids + data-* attributes, classes are styling only). -->
+
+<!-- The mark: a speech bubble holding a 2x2 grid of sprites, one of them picked. Reused via <use>. -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
+  <symbol id="pxMark" viewBox="0 0 11 12" shape-rendering="crispEdges">
+    <path fill="currentColor" fill-rule="evenodd" d="M2 0h7v1h1v1h1v5h-1v1h-1v1H5v1H4v1H3v1H2V8H1V7H0V2h1V1h1zM3 2h2v2H3zM6 2h2v2H6zM3 5h2v2H3zM6 5h2v2H6z"/>
+    <rect x="6" y="2" width="2" height="2" style="fill:var(--accent)"/>
+  </symbol>
+</svg>
+
+<header class="px-header">
+  <div class="px-header-in">
+    <a class="px-brand" href="/" aria-label="Pixie sprite chat, home">
+      <svg class="px-mark" width="22" height="24" aria-hidden="true"><use href="#pxMark"/></svg>
+      <span class="px-brand-name">Pixie</span>
+      <span class="px-brand-sub">Sprite chat</span>
+    </a>
+    <nav class="px-nav" aria-label="Account">
+      <a class="px-nav-link" href="/login">Log in</a>
+      <a class="px-nav-link" href="/label" id="toAB">Rate A/B</a>
+      <span class="px-who" id="who"></span>
+      <button type="button" class="px-btn px-btn-quiet" id="changeName">Change<span class="px-hide-sm">&nbsp;name</span></button>
+      <div class="px-options-wrap" id="optionsWrap">
+        <button type="button" class="px-btn px-btn-quiet px-options-btn" id="optionsBtn" aria-expanded="false" aria-controls="optionsPanel" aria-label="Options">
+          <svg width="14" height="14" viewBox="0 0 12 12" shape-rendering="crispEdges" aria-hidden="true"><path fill="currentColor" d="M1 2h2V1h2v1h6v1H5v1H3V3H1zM1 6h6V5h2v1h2v1H9v1H7V7H1zM1 10h3V9h2v1h5v1H6v1H4v-1H1z"/></svg>
+          <span>Options</span>
+          <span class="px-options-dot" id="optionsDot" aria-hidden="true"></span>
+        </button>
+        <div class="px-options-panel" id="optionsPanel" role="dialog" aria-label="Generation options" hidden>
+          <div class="px-options-head">
+            <span class="px-options-title">Options</span>
+            <button type="button" class="px-options-reset" id="optionsReset" hidden>Reset</button>
+          </div>
+          <div class="px-cond" id="condBar" data-hook="cond">
+            <div class="px-cond-palette" id="paletteWrap">
+              <div class="px-cond-field">
+                <label class="px-cond-label" id="paletteLabel" for="paletteBtn">Palette</label>
+                <span class="px-cond-ctrl">
+                  <select id="palettePick" hidden aria-hidden="true" tabindex="-1"></select>
+                  <button type="button" class="px-palette-btn" id="paletteBtn" role="combobox" aria-haspopup="listbox" aria-expanded="false" aria-controls="paletteMenu" aria-labelledby="paletteLabel" aria-describedby="paletteValue">
+                    <span class="px-palette-val" id="paletteValue">Auto (no palette hint)</span>
+                    <span id="paletteSwatches" class="px-cond-swatches" aria-hidden="true"></span>
+                    <svg class="px-palette-caret" width="8" height="4" viewBox="0 0 8 4" shape-rendering="crispEdges" aria-hidden="true"><path fill="currentColor" d="M0 0h8v1H7v1H6v1H5v1H3V3H2V2H1V1H0z"/></svg>
+                  </button>
+                </span>
+              </div>
+              <div class="px-palette-pop" id="palettePop" hidden>
+                <ul class="px-palette-menu" id="paletteMenu" role="listbox" aria-labelledby="paletteLabel" tabindex="-1"></ul>
+              </div>
+            </div>
+            <label class="px-cond-field">Fill
+              <select id="styleFill" aria-label="Fill"></select>
+            </label>
+            <label class="px-cond-field">Outline
+              <select id="styleOutline" aria-label="Outline"></select>
+            </label>
+            <label class="px-cond-field">Colours
+              <select id="styleColours" aria-label="Colour count"></select>
+            </label>
+          </div>
+          <div class="px-options-foot">
+            <div class="px-view px-view-global" id="viewDefault" role="group" aria-label="Show results as">
+              <span class="px-view-label">Show</span>
+              <button type="button" class="px-view-btn" data-view="top4" aria-pressed="true">Top 4</button>
+              <button type="button" class="px-view-btn" data-view="grid" aria-pressed="false">All 20</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </nav>
+  </div>
+</header>
+
+<main class="px-main">
+  <section class="px-thread" id="thread" aria-live="polite">
+    <article class="px-msg px-msg-bot px-intro" id="intro">
+      <h1 class="px-intro-title">What should I draw?</h1>
+      <p class="px-intro-text">Describe a 16×16 sprite and I'll draw it. I make 20 versions, keep the 4 best, and you pick your favourite (or say none are good). Your picks help train the model.</p>
+      <div class="px-chips" id="chips">
+        <button type="button" class="px-chip" data-prompt="red potion">red potion</button>
+        <button type="button" class="px-chip" data-prompt="wooden shield">wooden shield</button>
+        <button type="button" class="px-chip" data-prompt="green slime">green slime</button>
+        <button type="button" class="px-chip" data-prompt="gold key">gold key</button>
+      </div>
+    </article>
+  </section>
+</main>
+
+<form class="px-composer" id="composer" autocomplete="off">
+  <div class="px-composer-in">
+    <div class="px-field">
+      <input class="px-input px-input-bare" id="prompt" name="prompt" type="text" maxlength="60" placeholder="Describe a sprite, e.g. magic staff" aria-label="Sprite description" aria-describedby="composerHint" enterkeyhint="send">
+      <button class="px-send" id="send" type="submit">
+        <svg width="16" height="16" viewBox="0 0 8 8" shape-rendering="crispEdges" aria-hidden="true"><path fill="currentColor" d="M3 0h2v1h1v1h1v1h1v2H6V4H5v4H3V4H2v1H0V3h1V2h1V1h1z"/></svg>
+        <span class="px-send-label">Generate</span>
+      </button>
+    </div>
+    <p class="px-composer-hint" id="composerHint">Up to 60 characters. Every pick you make counts as a vote. <span id="quotaLeft" hidden></span></p>
+  </div>
+</form>
+
+<template id="tplUser">
+  <article class="px-msg px-msg-user"><p class="px-msg-text" data-ref="text"></p></article>
+</template>
+<template id="tplBot">
+  <article class="px-msg px-msg-bot" data-state="queued">
+    <p class="px-status" data-ref="status"></p>
+    <div class="px-view" data-ref="view" role="group" aria-label="Show" hidden>
+      <button type="button" class="px-view-btn" data-view="top4" aria-pressed="true">Top 4</button>
+      <button type="button" class="px-view-btn" data-view="grid" aria-pressed="false">All 20</button>
+    </div>
+    <div class="px-sprites" data-ref="sprites" role="group" aria-label="Pick your favourite"></div>
+    <div class="px-grid" data-ref="grid" role="group" aria-label="Pick your favourite of all 20" hidden></div>
+    <div class="px-actions" data-ref="actions" hidden>
+      <button type="button" class="px-btn px-btn-none" data-ref="none">None are good</button>
+    </div>
+    <div class="px-none-reasons" data-ref="noneReasons" role="group" aria-label="What went wrong?" hidden>
+      <span class="px-none-reasons-lbl">What went wrong? (optional)</span>
+      <div class="px-none-reasons-row">
+        <button type="button" class="px-reason-chip" data-reason="wrong_subject" aria-pressed="false">Wrong subject</button>
+        <button type="button" class="px-reason-chip" data-reason="messy_pixels" aria-pressed="false">Messy pixels</button>
+        <button type="button" class="px-reason-chip" data-reason="cut_off" aria-pressed="false">Cut off</button>
+        <button type="button" class="px-reason-chip" data-reason="wrong_style" aria-pressed="false">Wrong colour/style</button>
+        <button type="button" class="px-reason-chip px-reason-tweak" data-action="tweak">Tweak prompt ↗</button>
+      </div>
+    </div>
+    <p class="px-note" data-ref="note"></p>
+  </article>
+</template>
+<template id="tplSprite">
+  <div class="px-sprite-wrap" data-index="">
+    <button type="button" class="px-sprite"><span class="px-sprite-frame"><img class="px-sprite-img" alt="" width="256" height="256"></span><span class="px-sprite-key"></span></button>
+    <div class="px-sprite-tools" data-ref="tools" role="group" aria-label="Sprite actions">
+      <button type="button" class="px-sprite-tool" data-action="edit" aria-label="Edit sprite" title="Edit">
+        <svg width="14" height="14" viewBox="0 0 12 12" shape-rendering="crispEdges" aria-hidden="true"><path fill="currentColor" d="M8 1h2v1h1v2h-1v1H9V3H8zM6 3h2v1h1v1H8v1H7v1H6v1H5v1H4v1H3v1H1V9h1V7h1V6h1V5h1V4h1z"/></svg>
+        <span class="px-sr">Edit</span>
+      </button>
+      <button type="button" class="px-sprite-tool" data-action="download" data-size="512" data-bg="transparent" aria-label="Download PNG" title="Download">
+        <svg width="14" height="14" viewBox="0 0 12 12" shape-rendering="crispEdges" aria-hidden="true"><path fill="currentColor" d="M5 1h2v4h3v1H9v1H8v1H7v1H5V8H4V7H3V6H2V5h3zM1 9h1v1h8V9h1v2H1z"/></svg>
+        <span class="px-sr">Download</span>
+      </button>
+      <button type="button" class="px-sprite-tool" data-action="share" aria-label="Copy share link" title="Share">
+        <svg width="14" height="14" viewBox="0 0 12 12" shape-rendering="crispEdges" aria-hidden="true"><path fill="currentColor" d="M7 1h3v3H6V3h1zM5 4h1v1H5zM1 5h4v1H4v1h1v1H1zM5 8h1v1H5zM6 9h4v3H7v-2H6z"/></svg>
+        <span class="px-sr">Share</span>
+      </button>
+    </div>
+  </div>
+</template>
+
+<div class="px-gate" id="gate" hidden>
+  <form class="px-gate-card" id="gateform" autocomplete="off">
+    <svg class="px-gate-mark" width="44" height="48" aria-hidden="true"><use href="#pxMark"/></svg>
+    <h2 class="px-gate-title">Pixie sprite chat</h2>
+    <p class="px-gate-text">Type a prompt, get 4 sprites, pick the best. Use the same name as on the A/B rating page.</p>
+    <label class="px-label" for="name">Your name <span class="px-label-hint">2–30 characters</span></label>
+    <input class="px-input" id="name" maxlength="30" placeholder="e.g. Alex" autocapitalize="words" enterkeyhint="go">
+    <p class="px-error" id="gateerr" role="alert"></p>
+    <button class="px-btn px-btn-primary" type="submit">Start</button>
+    <p class="px-gate-privacy"><a href="/login">Or log in with email, Google or X</a></p>
+    <p class="px-gate-privacy">Privacy: we only store the name you enter, your prompts and picks and how long you took. No email, no password, no IP address.</p>
+  </form>
+</div>
+<script src="editor.js?v=20261112s2"></script>
+<script src="chat.js?v=20261113pdd1"></script>
+</body>
+</html>

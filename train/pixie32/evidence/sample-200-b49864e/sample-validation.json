@@ -1,0 +1,20 @@
+{
+  "purpose": "Read-only loader sample validation; no training performed",
+  "listed_images": 200,
+  "unique_ids": 200,
+  "nonempty_captions": 200,
+  "dimensions": [
+    [
+      32,
+      32
+    ]
+  ],
+  "alpha_values": [
+    0,
+    255
+  ],
+  "unique_pixel_hashes": 200,
+  "edge_list_intersection": 28,
+  "missing_required_provenance_files": [],
+  "production_builder_ready": true
+}

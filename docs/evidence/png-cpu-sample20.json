@@ -1,0 +1,87 @@
+{
+  "comparison_valid": true,
+  "rows": [
+    {
+      "trial": 0,
+      "prompt_index": 0,
+      "pixels_and_metadata_exact": true,
+      "legacy_ms": 45.392700005322695,
+      "fast_ms": 12.4091000034241,
+      "legacy_payload_bytes": 40401,
+      "fast_payload_bytes": 49369
+    },
+    {
+      "trial": 1,
+      "prompt_index": 0,
+      "pixels_and_metadata_exact": true,
+      "legacy_ms": 44.689100002869964,
+      "fast_ms": 14.018500005477108,
+      "legacy_payload_bytes": 40401,
+      "fast_payload_bytes": 49369
+    },
+    {
+      "trial": 2,
+      "prompt_index": 0,
+      "pixels_and_metadata_exact": true,
+      "legacy_ms": 45.40580000320915,
+      "fast_ms": 12.552300002425909,
+      "legacy_payload_bytes": 40401,
+      "fast_payload_bytes": 49369
+    },
+    {
+      "trial": 3,
+      "prompt_index": 0,
+      "pixels_and_metadata_exact": true,
+      "legacy_ms": 47.9953000030946,
+      "fast_ms": 13.10699999157805,
+      "legacy_payload_bytes": 40401,
+      "fast_payload_bytes": 49369
+    },
+    {
+      "trial": 4,
+      "prompt_index": 0,
+      "pixels_and_metadata_exact": true,
+      "legacy_ms": 44.39710000588093,
+      "fast_ms": 12.638200001674704,
+      "legacy_payload_bytes": 40401,
+      "fast_payload_bytes": 49369
+    }
+  ],
+  "summary": {
+    "legacy_ms": {
+      "median": 45.392700005322695,
+      "range": [
+        44.39710000588093,
+        47.9953000030946
+      ]
+    },
+    "fast_ms": {
+      "median": 12.638200001674704,
+      "range": [
+        12.4091000034241,
+        14.018500005477108
+      ]
+    },
+    "legacy_payload_bytes": {
+      "median": 40401,
+      "range": [
+        40401,
+        40401
+      ]
+    },
+    "fast_payload_bytes": {
+      "median": 49369,
+      "range": [
+        49369,
+        49369
+      ]
+    }
+  },
+  "scope": "CPU resize, PNG and base64 only; input sprites resized to native16 before timing; excludes model, reward, JSON, queue and HTTP",
+  "count": 20,
+  "output_size": [
+    256,
+    256
+  ],
+  "pillow_version": "13.0.0"
+}

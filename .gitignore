@@ -1,0 +1,60 @@
+# Secrets, local environments
+node_modules/
+.venv/
+venv/
+.env
+.env.*
+!.env.example
+!web/.env.example
+!web/pixel-labeller-auth.env.example
+*.key
+worker.key
+**/cookies*
+
+# Logs
+*.log
+logs/
+wandb/
+outputs/
+
+# Checkpoints, weights, datasets, caches
+*.pt
+*.pth
+*.ckpt
+*.bin
+*.safetensors
+*.gguf
+*.onnx
+*.npy
+*.npz
+*.pkl
+checkpoints/
+datasets/
+runs/
+cache/
+data/
+weights/
+
+# Python / node junk and local databases
+__pycache__/
+*.pyc
+*.pyo
+*.sqlite
+*.sqlite3
+*.jsonl
+*.gz
+*.tgz
+backups/
+*.bak
+*.bak-*
+web/public/s/
+web/public/ab/
+web/public/blind/s/
+/var/
+.gitleaks-report.json
+
+# Not distributed: frozen holdouts and the vote-fitted fallback scorer
+/holdout/
+worker/feat_linear.json
+web/worker/feat_linear.json
+/samples/

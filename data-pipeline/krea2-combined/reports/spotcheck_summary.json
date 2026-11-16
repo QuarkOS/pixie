@@ -1,0 +1,387 @@
+{
+ "groups": {
+  "3080ti": {
+   "orig_ok -> v2_ok": 33057,
+   "orig_ok -> v2_rejected": 1,
+   "orig_purity_fail -> v2_ok": 51873,
+   "orig_purity_fail -> v2_purity_fail": 12,
+   "orig_purity_fail -> v2_rejected": 6,
+   "orig_rejected -> v2_ok": 4067,
+   "orig_rejected -> v2_purity_fail": 1,
+   "orig_rejected -> v2_rejected": 983
+  },
+  "3060ti": {
+   "orig_ok -> v2_ok": 5522,
+   "orig_purity_fail -> v2_ok": 8312,
+   "orig_purity_fail -> v2_purity_fail": 1,
+   "orig_rejected -> v2_ok": 569,
+   "orig_rejected -> v2_rejected": 140
+  },
+  "5070ti": {
+   "orig_ok -> v2_ok": 33595,
+   "orig_ok -> v2_rejected": 5,
+   "orig_rejected -> v2_ok": 1018,
+   "orig_rejected -> v2_rejected": 662
+  }
+ },
+ "key_group_old_fail_reasons": {
+  "3080ti": {
+   "purity<0.75": 53522,
+   "fg>0.90": 3419,
+   "spill>0.08": 488,
+   "main_comp<0.85": 289
+  },
+  "3060ti": {
+   "purity<0.75": 8535,
+   "fg>0.90": 495,
+   "main_comp<0.85": 36,
+   "spill>0.08": 56
+  },
+  "5070ti": {
+   "no_metrics": 1018
+  }
+ },
+ "key_group_old_fail_combos": {
+  "3080ti": {
+   "purity<0.75": 51698,
+   "fg>0.90": 1988,
+   "fg>0.90+purity<0.75": 1308,
+   "spill>0.08+purity<0.75": 230,
+   "main_comp<0.85+purity<0.75": 207,
+   "none": 175,
+   "spill>0.08": 129,
+   "main_comp<0.85": 76
+  },
+  "3060ti": {
+   "purity<0.75": 8277,
+   "fg>0.90": 278,
+   "fg>0.90+purity<0.75": 199,
+   "none": 35,
+   "main_comp<0.85+purity<0.75": 27,
+   "spill>0.08+purity<0.75": 21,
+   "spill>0.08": 17,
+   "fg>0.90+spill>0.08+purity<0.75": 11
+  },
+  "5070ti": {
+   "no_metrics": 1018
+  }
+ },
+ "metric_percentiles_all_cells": {
+  "3080ti": {
+   "purity": {
+    "orig": {
+     "5": 0.585,
+     "25": 0.675,
+     "50": 0.73,
+     "75": 0.782,
+     "95": 0.857
+    },
+    "v2": {
+     "5": 0.585,
+     "25": 0.675,
+     "50": 0.73,
+     "75": 0.782,
+     "95": 0.857
+    }
+   },
+   "fg": {
+    "orig": {
+     "5": 0.249,
+     "25": 0.385,
+     "50": 0.495,
+     "75": 0.613,
+     "95": 0.859
+    },
+    "v2": {
+     "5": 0.246,
+     "25": 0.382,
+     "50": 0.492,
+     "75": 0.61,
+     "95": 0.853
+    }
+   },
+   "main_comp": {
+    "orig": {
+     "5": 0.995,
+     "25": 0.999,
+     "50": 1.0,
+     "75": 1.0,
+     "95": 1.0
+    },
+    "v2": {
+     "5": 0.996,
+     "25": 0.999,
+     "50": 1.0,
+     "75": 1.0,
+     "95": 1.0
+    }
+   },
+   "spill": {
+    "orig": {
+     "5": 0.0,
+     "25": 0.0,
+     "50": 0.0,
+     "75": 0.0,
+     "95": 0.016
+    },
+    "v2": {
+     "5": 0.0,
+     "25": 0.0,
+     "50": 0.0,
+     "75": 0.0,
+     "95": 0.007
+    }
+   }
+  },
+  "3060ti": {
+   "purity": {
+    "orig": {
+     "5": 0.587,
+     "25": 0.677,
+     "50": 0.731,
+     "75": 0.783,
+     "95": 0.858
+    },
+    "v2": {
+     "5": 0.587,
+     "25": 0.677,
+     "50": 0.731,
+     "75": 0.783,
+     "95": 0.858
+    }
+   },
+   "fg": {
+    "orig": {
+     "5": 0.25,
+     "25": 0.383,
+     "50": 0.493,
+     "75": 0.608,
+     "95": 0.843
+    },
+    "v2": {
+     "5": 0.247,
+     "25": 0.38,
+     "50": 0.49,
+     "75": 0.605,
+     "95": 0.834
+    }
+   },
+   "main_comp": {
+    "orig": {
+     "5": 0.995,
+     "25": 0.999,
+     "50": 1.0,
+     "75": 1.0,
+     "95": 1.0
+    },
+    "v2": {
+     "5": 0.996,
+     "25": 1.0,
+     "50": 1.0,
+     "75": 1.0,
+     "95": 1.0
+    }
+   },
+   "spill": {
+    "orig": {
+     "5": 0.0,
+     "25": 0.0,
+     "50": 0.0,
+     "75": 0.0,
+     "95": 0.014
+    },
+    "v2": {
+     "5": 0.0,
+     "25": 0.0,
+     "50": 0.0,
+     "75": 0.0,
+     "95": 0.007
+    }
+   }
+  },
+  "5070ti": {
+   "purity": {
+    "orig": null,
+    "v2": {
+     "5": 0.812,
+     "25": 0.852,
+     "50": 0.876,
+     "75": 0.9,
+     "95": 0.935
+    }
+   },
+   "fg": {
+    "orig": null,
+    "v2": {
+     "5": 0.235,
+     "25": 0.355,
+     "50": 0.451,
+     "75": 0.557,
+     "95": 0.767
+    }
+   },
+   "main_comp": {
+    "orig": null,
+    "v2": {
+     "5": 0.998,
+     "25": 1.0,
+     "50": 1.0,
+     "75": 1.0,
+     "95": 1.0
+    }
+   },
+   "spill": {
+    "orig": null,
+    "v2": {
+     "5": 0.0,
+     "25": 0.0,
+     "50": 0.0,
+     "75": 0.0,
+     "95": 0.0
+    }
+   }
+  }
+ },
+ "gate_cross_check": {
+  "3080ti": {
+   "old_gates_on_orig_metrics": 33233,
+   "old_gates_on_v2_metrics": 33383,
+   "v2_gates_on_orig_metrics": 88522,
+   "v2_gates_on_v2_metrics": 88997,
+   "old_gates_but_purity>=0.35_on_orig": 84937
+  },
+  "3060ti": {
+   "old_gates_on_orig_metrics": 5557,
+   "old_gates_on_v2_metrics": 5579,
+   "v2_gates_on_orig_metrics": 14347,
+   "v2_gates_on_v2_metrics": 14403,
+   "old_gates_but_purity>=0.35_on_orig": 13834
+  }
+ },
+ "final_counts_by_option": {
+  "A_current_final": {
+   "total": 138010,
+   "3080ti": 88997,
+   "3060ti": 14403,
+   "5070ti": 34610
+  },
+  "B_purity>=0.50": {
+   "total": 137280,
+   "3080ti": 88370,
+   "3060ti": 14300,
+   "5070ti": 34610
+  },
+  "B_purity>=0.60": {
+   "total": 131351,
+   "3080ti": 83225,
+   "3060ti": 13517,
+   "5070ti": 34609
+  },
+  "B_purity>=0.75(old)": {
+   "total": 75820,
+   "3080ti": 35469,
+   "3060ti": 5872,
+   "5070ti": 34479
+  },
+  "C_main_comp>=0.85": {
+   "total": 137467,
+   "3080ti": 88671,
+   "3060ti": 14362,
+   "5070ti": 34434
+  },
+  "C_main_comp>=0.95": {
+   "total": 136830,
+   "3080ti": 88259,
+   "3060ti": 14297,
+   "5070ti": 34274
+  },
+  "D_fg<=0.90": {
+   "total": 133485,
+   "3080ti": 85620,
+   "3060ti": 13911,
+   "5070ti": 33954
+  },
+  "E_drop_all_edge_touch": {
+   "total": 60823,
+   "3080ti": 32640,
+   "3060ti": 5489,
+   "5070ti": 22694
+  },
+  "E_edge_px<=4": {
+   "total": 74515,
+   "3080ti": 41997,
+   "3060ti": 7029,
+   "5070ti": 25489
+  },
+  "E_edge_px<=8": {
+   "total": 88108,
+   "3080ti": 52007,
+   "3060ti": 8611,
+   "5070ti": 27490
+  },
+  "E_edge_px<=16": {
+   "total": 106806,
+   "3080ti": 65960,
+   "3060ti": 10824,
+   "5070ti": 30022
+  },
+  "F_no_magenta_px": {
+   "total": 121953,
+   "3080ti": 76478,
+   "3060ti": 12506,
+   "5070ti": 32969
+  },
+  "F_magenta_px<=2": {
+   "total": 134453,
+   "3080ti": 86394,
+   "3060ti": 14042,
+   "5070ti": 34017
+  },
+  "G_no_tiny_islands(<=3px comps)": {
+   "total": 135492,
+   "3080ti": 87122,
+   "3060ti": 14129,
+   "5070ti": 34241
+  },
+  "H_combo_purity>=0.5_mc>=0.85_edge_px<=8": {
+   "total": 87142,
+   "3080ti": 51296,
+   "3060ti": 8509,
+   "5070ti": 27337
+  }
+ },
+ "final_stats": {
+  "sprites_with_magenta_px": 16057,
+  "magenta_px_total": 81090,
+  "magenta_on_outline_sprites": 13931,
+  "edge_px_percentiles_edge_touch": {
+   "5": 2.0,
+   "25": 6.0,
+   "50": 13.0,
+   "75": 24.0,
+   "95": 91.0
+  },
+  "with_tiny_islands": 2518
+ },
+ "sample_pools": {
+  "key_group": 65839,
+  "both_passed": 72174,
+  "edge_touch_final": 77187
+ },
+ "sheets": {
+  "key": [
+   "$DATA_ROOT/spotcheck/key_origfail_v2pass_1.png",
+   "$DATA_ROOT/spotcheck/key_origfail_v2pass_2.png",
+   "$DATA_ROOT/spotcheck/key_origfail_v2pass_3.png",
+   "$DATA_ROOT/spotcheck/key_origfail_v2pass_4.png"
+  ],
+  "both": [
+   "$DATA_ROOT/spotcheck/both_passed_1.png",
+   "$DATA_ROOT/spotcheck/both_passed_2.png"
+  ],
+  "edge": [
+   "$DATA_ROOT/spotcheck/edge_touch_final_1.png",
+   "$DATA_ROOT/spotcheck/edge_touch_final_2.png"
+  ]
+ }
+}

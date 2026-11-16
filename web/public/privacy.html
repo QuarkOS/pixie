@@ -1,0 +1,74 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#000000">
+<meta name="color-scheme" content="dark">
+<title>Pixie — Privacy</title>
+<link rel="stylesheet" href="/chat.css">
+<style>
+  body.px-legal {
+    margin: 0;
+    min-height: 100dvh;
+    background: var(--ground);
+    color: var(--text);
+    font: 400 var(--fs-body)/1.55 var(--font);
+    -webkit-font-smoothing: antialiased;
+  }
+  .wrap {
+    max-width: 640px;
+    margin: 0 auto;
+    padding: 32px var(--margin) 64px;
+  }
+  .card {
+    background: var(--surface);
+    padding: 28px 24px;
+    clip-path: var(--notch);
+  }
+  h1 { font-size: var(--fs-title); font-weight: 600; margin: 0 0 6px; letter-spacing: -0.02em; }
+  .updated { color: var(--faint); font-size: var(--fs-small); margin: 0 0 20px; }
+  h2 { font-size: 16px; font-weight: 600; margin: 24px 0 8px; }
+  p, li { color: var(--muted); margin: 0 0 12px; }
+  ul { margin: 0 0 12px; padding-left: 1.2em; }
+  a { color: var(--accent); text-decoration: none; }
+  a:hover { text-decoration: underline; }
+  .foot { margin-top: 24px; font-size: var(--fs-small); color: var(--faint); }
+</style>
+</head>
+<body class="px-legal">
+  <main class="wrap">
+    <article class="card">
+      <h1>Privacy</h1>
+      <p class="updated">Pixel AI (Pixie) at pixie.example.invalid. Last updated 12 November 2026.</p>
+      <p>Pixie is a small sprite generator and labelling site. This page describes what the service itself stores. Questions or requests: <a href="mailto:owner@example.invalid">owner@example.invalid</a>.</p>
+
+      <h2>What we store</h2>
+      <p>If you sign in, we store:</p>
+      <ul>
+        <li>Your email address (including the email on a Google account you sign in with), a display name, when the account was created, and when you last signed in.</li>
+        <li>The labeller identity (or identities) attached to that account, including when they were linked.</li>
+        <li>A signed session, kept in a cookie. The session record includes a truncated browser user-agent string, not your IP address.</li>
+      </ul>
+      <p>Whether you sign in or only enter a name, we store the work you do on the site:</p>
+      <ul>
+        <li>The name you enter, your labeller identity, and a coarse device class (mobile or desktop, taken from the browser user-agent).</li>
+        <li>Prompts you submit, the sprites shown, your votes and picks, and how long a round took.</li>
+        <li>Sprite edits you save (including the edited image and a short record of the tools used).</li>
+        <li>Public shares you create (the sprite image, prompt, and the name and labeller identity you shared under).</li>
+      </ul>
+      <p>Short-lived login records (magic-link tokens and sign-in state) are kept only until they expire or are used.</p>
+
+      <h2>IP addresses</h2>
+      <p>The app does not write IP addresses to its database, vote logs, or regular application logs. Failed admin-password attempts are rate-limited in memory for up to 15 minutes; those logs record only a short hash, not the address itself.</p>
+
+      <h2>What we do with this</h2>
+      <p>We use this data to run your account, keep your votes and edits attached to you, improve the sprite model, and operate the site. We do not sell it. Shared sprites are public at the link you create.</p>
+
+      <h2>Contact</h2>
+      <p>If you want a copy of what we have, or want it deleted, email <a href="mailto:owner@example.invalid">owner@example.invalid</a>.</p>
+      <p class="foot"><a href="/login">Back to login</a> · <a href="/terms">Terms</a></p>
+    </article>
+  </main>
+</body>
+</html>

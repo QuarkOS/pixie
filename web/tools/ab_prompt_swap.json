@@ -1,0 +1,25 @@
+{
+  "note": "Retired prompts stay in api/_lib/abdata.js so old votes still resolve. Replacements are appended as condboost-vs-condboost pairs by tools/append_ab_v3.py. The grid pool is not part of this list.",
+  "swap": [
+    {"old": "oak quarterstaff", "new": "wizard staff"},
+    {"old": "iron cestus", "new": "boxing glove"},
+    {"old": "ceremonial khopesh", "new": "curved sword"},
+    {"old": "silver glaive", "new": "short spear"},
+    {"old": "steel morningstar", "new": "spiked mace"},
+    {"old": "gnoll warrior", "new": "soldier"},
+    {"old": "kobold miner", "new": "miner"},
+    {"old": "satyr piper", "new": "baker"},
+    {"old": "dryad of the oak", "new": "flower fairy"},
+    {"old": "street urchin", "new": "firefighter"},
+    {"old": "smelling salts bottle", "new": "medicine bottle"},
+    {"old": "boarding pike", "new": "pitchfork"},
+    {"old": "sunspear", "new": "viking sword"},
+    {"old": "shepherd crook", "new": "walking cane"},
+    {"old": "dungeon flagstone", "new": "floor tile"},
+    {"old": "wood parquet tile", "new": "plank stack"},
+    {"old": "gold inlay tile", "new": "gold bar"},
+    {"old": "basilisk", "new": "cobra"},
+    {"old": "hydra hatchling", "new": "baby dragon"},
+    {"old": "adobe wall tile", "new": "mud brick"}
+  ]
+}

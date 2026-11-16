@@ -1,0 +1,16 @@
+{
+ "final": 138010,
+ "mag_outline_sprites": 13931,
+ "mag_outline_px_total": 33233,
+ "edge_px>=32": 13642,
+ "edge_px>=24": 20766,
+ "touch_sides_hist": {
+  "0": 60823,
+  "1": 23112,
+  "2": 30358,
+  "3": 11659,
+  "4": 12058
+ },
+ "touch>=2_sides": 54075,
+ "touch>=3_sides": 23717
+}

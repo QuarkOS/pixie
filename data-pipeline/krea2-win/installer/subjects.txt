@@ -1,0 +1,74 @@
+# One subject per line (or several separated by |). 4 subjects = 1 sheet.
+# Replace this list with your own; restart Start-Krea2.bat to pick it up. Delete data\ to start over.
+red apple
+banana
+orange carrot
+slice of bread
+cup of coffee
+glass of milk
+cheeseburger
+pepperoni pizza
+fried egg
+chocolate donut
+ice cream cone
+wedge of cheese
+green pear
+bunch of grapes
+strawberry
+watermelon slice
+house key
+padlock
+wooden chair
+table lamp
+alarm clock
+smartphone
+laptop
+television
+toothbrush
+bar of soap
+bath towel
+umbrella
+backpack
+sneaker
+baseball cap
+t-shirt
+eyeglasses
+wristwatch
+wallet
+coin purse
+pencil
+scissors
+open book
+envelope
+potted plant
+sunflower
+green tree
+cactus in a pot
+orange cat
+brown dog
+goldfish
+yellow duck
+red bicycle
+blue car
+yellow school bus
+paper airplane
+soccer ball
+basketball
+guitar
+headphones
+hammer
+screwdriver
+paint brush
+watering can
+cooking pot
+frying pan
+teapot
+kitchen knife
+candle
+light bulb
+battery
+camera
+gift box
+red balloon
+teddy bear
+rubber duck

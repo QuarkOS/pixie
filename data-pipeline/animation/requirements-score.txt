@@ -1,0 +1,6 @@
+# Optional local vision embeddings. CPU review uses NumPy and Pillow.
+numpy>=1.24
+Pillow>=10
+# Install only when using --vision-model with a local checkpoint.
+torch
+transformers

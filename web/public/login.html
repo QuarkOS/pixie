@@ -1,0 +1,407 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#000000">
+<meta name="color-scheme" content="dark">
+<title>Log in — Pixie</title>
+<link rel="preload" href="fonts/inter-latin.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="chat.css?v=20261112s2">
+<style>
+  body.px-login {
+    margin: 0;
+    min-height: 100dvh;
+    background: var(--ground);
+    color: var(--text);
+    font: 400 var(--fs-body)/1.5 var(--font);
+    -webkit-font-smoothing: antialiased;
+    display: flex;
+    flex-direction: column;
+  }
+  .px-login-main {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 32px var(--margin) 56px;
+  }
+  .px-auth-card {
+    width: 100%;
+    max-width: 440px;
+    background: var(--surface);
+    padding: 28px 24px 24px;
+    clip-path: var(--notch);
+  }
+  .px-auth-head {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    margin-bottom: 18px;
+  }
+  .px-auth-eyebrow {
+    display: block;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 2px;
+  }
+  .px-auth-title {
+    margin: 0;
+    font-size: var(--fs-title);
+    font-weight: 600;
+    letter-spacing: -0.02em;
+    line-height: 1.2;
+  }
+  .px-auth-desc {
+    margin: 0 0 20px;
+    color: var(--muted);
+    font-size: var(--fs-ui);
+    line-height: 1.5;
+  }
+  .px-auth-form .px-label {
+    display: block;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--text);
+    margin-bottom: 8px;
+  }
+  .px-auth-input {
+    display: block;
+    width: 100%;
+    height: 46px;
+    padding: 0 14px;
+    border: 0;
+    background: var(--raised-2);
+    color: var(--text);
+    font: inherit;
+    font-size: 15px;
+    clip-path: var(--notch-sm);
+    transition: background-color var(--t-fast);
+  }
+  .px-auth-input::placeholder { color: var(--faint); }
+  .px-auth-input:focus {
+    outline: none;
+    background: var(--raised-3);
+    box-shadow: inset 0 0 0 2px var(--text);
+  }
+  .px-auth-submit {
+    margin-top: 12px;
+    width: 100%;
+    height: 46px;
+    font-size: 15px;
+  }
+  .px-auth-card .px-error {
+    margin: 10px 0 0;
+    min-height: 0;
+  }
+  .px-auth-card .px-error:empty {
+    display: none;
+  }
+  .px-auth-sent {
+    margin-top: 14px;
+    padding: 16px;
+    background: var(--raised);
+    clip-path: var(--notch-sm);
+    border-left: 3px solid var(--accent);
+  }
+  .px-auth-sent[hidden] { display: none; }
+  .px-auth-sent-title {
+    margin: 0 0 6px;
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--accent);
+  }
+  .px-auth-sent-msg {
+    margin: 0;
+    font-size: var(--fs-ui);
+    color: var(--text);
+    line-height: 1.5;
+  }
+  .px-auth-sent-sub {
+    margin: 8px 0 12px;
+    font-size: var(--fs-small);
+    color: var(--muted);
+    line-height: 1.45;
+  }
+  .px-auth-secondary {
+    height: 36px;
+    padding: 0 12px;
+    background: var(--raised-2);
+    color: var(--text);
+    border: 0;
+    font: inherit;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    clip-path: var(--notch-sm);
+  }
+  .px-auth-secondary:hover { background: var(--raised-3); }
+  .px-auth-sep {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin: 22px 0 14px;
+    color: var(--faint);
+    font-size: var(--fs-small);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+  }
+  .px-auth-sep::before,
+  .px-auth-sep::after {
+    content: "";
+    flex: 1;
+    height: 1px;
+    background: var(--raised-2);
+  }
+  .px-auth-providers {
+    display: grid;
+    gap: 8px;
+  }
+  .px-oauth-btn {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    width: 100%;
+    min-height: 44px;
+    padding: 10px 14px;
+    background: var(--raised-2);
+    color: var(--text);
+    text-decoration: none;
+    font-size: 14px;
+    font-weight: 500;
+    clip-path: var(--notch-sm);
+    transition: background-color var(--t-fast);
+  }
+  .px-oauth-btn:hover { background: var(--raised-3); text-decoration: none; }
+  .px-oauth-left {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .px-oauth-state {
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--muted);
+    padding: 2px 7px;
+    background: var(--raised);
+    clip-path: var(--notch-sm);
+  }
+  .px-oauth-btn.off,
+  .px-oauth-btn[aria-disabled="true"] {
+    opacity: 0.55;
+    cursor: not-allowed;
+    background: var(--raised);
+  }
+  .px-oauth-btn.off:hover,
+  .px-oauth-btn[aria-disabled="true"]:hover {
+    background: var(--raised);
+  }
+  .px-auth-foot {
+    margin-top: 20px;
+    padding-top: 16px;
+    border-top: 1px solid var(--raised-2);
+    display: grid;
+    gap: 8px;
+    font-size: var(--fs-small);
+    line-height: 1.5;
+    color: var(--muted);
+  }
+  .px-auth-foot a {
+    color: var(--accent);
+    text-decoration: none;
+  }
+  .px-auth-foot a:hover { text-decoration: underline; }
+  .px-auth-privacy { color: var(--faint); margin: 0; }
+  .px-auth-grace { margin: 0; }
+  @media (min-width: 640px) {
+    .px-auth-card { padding: 34px 32px 28px; }
+  }
+</style>
+</head>
+<body class="px-login">
+<svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
+  <symbol id="pxMark" viewBox="0 0 11 12" shape-rendering="crispEdges">
+    <path fill="currentColor" fill-rule="evenodd" d="M2 0h7v1h1v1h1v5h-1v1h-1v1H5v1H4v1H3v1H2V8H1V7H0V2h1V1h1zM3 2h2v2H3zM6 2h2v2H6zM3 5h2v2H3zM6 5h2v2H6z"/>
+    <rect x="6" y="2" width="2" height="2" style="fill:var(--accent)"/>
+  </symbol>
+</svg>
+
+<header class="px-header">
+  <div class="px-header-in">
+    <a class="px-brand" href="/" aria-label="Pixie sprite chat, home">
+      <svg class="px-mark" width="22" height="24" aria-hidden="true"><use href="#pxMark"/></svg>
+      <span class="px-brand-name">Pixie</span>
+      <span class="px-brand-sub">Sign in</span>
+    </a>
+    <nav class="px-nav" aria-label="Site">
+      <a class="px-nav-link" href="/chat">Sprite chat</a>
+      <a class="px-nav-link" href="/label">Rate A/B</a>
+    </nav>
+  </div>
+</header>
+
+<main class="px-login-main">
+  <section class="px-auth-card" aria-labelledby="loginTitle">
+    <div class="px-auth-head">
+      <svg class="px-mark" width="33" height="36" aria-hidden="true"><use href="#pxMark"/></svg>
+      <div>
+        <span class="px-auth-eyebrow">Pixie account</span>
+        <h1 class="px-auth-title" id="loginTitle">Log in to Pixie</h1>
+      </div>
+    </div>
+
+    <p class="px-auth-desc">Sign in with an email magic link, Google, or X. Your votes, prompts, and edits stay attached to your labeller identity across devices.</p>
+
+    <form class="px-auth-form" id="form" autocomplete="on">
+      <div id="emailEntry">
+        <label class="px-label" for="email">Email address</label>
+        <input class="px-input px-auth-input" id="email" name="email" type="email" required placeholder="owner@example.invalid" autocomplete="email">
+        <button class="px-btn px-btn-primary px-auth-submit" type="submit" id="send">Send magic link</button>
+      </div>
+
+      <div class="px-error" id="err" role="alert"></div>
+
+      <div class="px-auth-sent" id="sentPanel" hidden>
+        <p class="px-auth-sent-title">Check your email</p>
+        <p class="px-auth-sent-msg ok" id="ok"></p>
+        <p class="px-auth-sent-sub" id="sentSub">The sign-in link expires in 10 minutes. Open the link from your inbox on this browser to finish signing in.</p>
+        <button type="button" class="px-auth-secondary" id="resetEmail">Use a different email</button>
+      </div>
+    </form>
+
+    <div class="px-auth-sep"><span>or continue with</span></div>
+
+    <div class="px-auth-providers alt">
+      <a class="px-oauth-btn btn" id="google" href="/api/auth/login/google?callbackURL=/account">
+        <span class="px-oauth-left">
+          <svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true">
+            <path fill="currentColor" d="M15.6 8.2c0-.6-.1-1.1-.2-1.6H8v3h4.3c-.2 1-.8 1.9-1.6 2.4v2h2.6c1.5-1.4 2.3-3.4 2.3-5.8z"/>
+            <path fill="currentColor" opacity=".8" d="M8 16c2.2 0 4-.7 5.3-2l-2.6-2c-.7.5-1.6.8-2.7.8-2.1 0-3.8-1.4-4.5-3.3H.9v2.1C2.2 14.2 4.9 16 8 16z"/>
+            <path fill="currentColor" opacity=".6" d="M3.5 9.5c-.2-.5-.3-1-.3-1.5s.1-1 .3-1.5V4.4H.9C.3 5.5 0 6.7 0 8s.3 2.5.9 3.6l2.6-2.1z"/>
+            <path fill="currentColor" opacity=".85" d="M8 3.2c1.2 0 2.2.4 3 1.2l2.3-2.3C12 .8 10.1 0 8 0 4.9 0 2.2 1.8.9 4.4l2.6 2.1C4.2 4.6 5.9 3.2 8 3.2z"/>
+          </svg>
+          <span>Continue with Google</span>
+        </span>
+        <span class="px-oauth-state" id="googleState" hidden>Unavailable</span>
+      </a>
+
+      <a class="px-oauth-btn btn" id="x" href="/api/auth/login/x?callbackURL=/account">
+        <span class="px-oauth-left">
+          <svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true">
+            <path fill="currentColor" d="M12.6 1h2.4L9.8 6.9 16 15h-4.8L7.4 10.1 3.1 15H.7l5.6-6.3L.4 1h4.9l3.4 4.5L12.6 1zm-.8 12.6h1.3L4.7 2.3H3.3l8.5 11.3z"/>
+          </svg>
+          <span>Continue with X</span>
+        </span>
+        <span class="px-oauth-state" id="xState" hidden>Unavailable</span>
+      </a>
+    </div>
+
+    <div class="px-auth-foot">
+      <p class="px-auth-grace" id="graceNote">
+        Or <a href="/label">rate sprites with a name</a> or use <a href="/chat">Sprite chat</a> during the grace period. Already signed in? <a href="/account">Account</a>
+      </p>
+      <p class="px-auth-privacy">Privacy: we only store your sign-in identifier (email or OAuth account ID) and linked labeller IDs. No passwords are stored.</p>
+    </div>
+  </section>
+</main>
+
+<script>
+(async function(){
+  const err = document.getElementById('err');
+  const ok = document.getElementById('ok');
+  const emailInput = document.getElementById('email');
+  const sendBtn = document.getElementById('send');
+  const emailEntry = document.getElementById('emailEntry');
+  const sentPanel = document.getElementById('sentPanel');
+  const sentSub = document.getElementById('sentSub');
+  const resetBtn = document.getElementById('resetEmail');
+  const graceNote = document.getElementById('graceNote');
+
+  const me = await fetch('/api/auth/me', { credentials:'same-origin' }).then(r => r.ok ? r.json() : r.text().then(() => null)).catch(() => null);
+  if (me && me.email) { location.replace('/account'); return; }
+
+  const cfg = await fetch('/api/auth/config').then(r => r.ok ? r.json() : r.text().then(() => null)).catch(() => null) || {};
+  const p = cfg.providers || { google: cfg.google, x: cfg.x, magic_link: cfg.magic_link };
+
+  function markProviderUnavailable(anchorId, badgeId, name) {
+    const el = document.getElementById(anchorId);
+    const badge = document.getElementById(badgeId);
+    if (!el) return;
+    el.classList.add('off');
+    el.setAttribute('aria-disabled', 'true');
+    el.setAttribute('tabindex', '-1');
+    el.title = name + ' sign-in is not configured on this server.';
+    if (badge) { badge.textContent = 'Unavailable'; badge.hidden = false; }
+    el.addEventListener('click', (ev) => {
+      ev.preventDefault();
+      err.textContent = name + ' sign-in is not configured on this server. Use an email magic link instead.';
+    });
+  }
+
+  if (!p.google) markProviderUnavailable('google', 'googleState', 'Google');
+  if (!p.x) markProviderUnavailable('x', 'xState', 'X');
+
+  if (p.magic_link === false) {
+    sendBtn.disabled = true;
+    sendBtn.textContent = 'Magic link unavailable';
+    emailInput.disabled = true;
+    err.textContent = 'Email magic links are not enabled on this server.';
+  }
+
+  if (cfg.grace === false && graceNote) {
+    graceNote.innerHTML = 'Sign-in is required on this server. Already signed in? <a href="/account">Account</a>';
+  }
+
+  resetBtn.addEventListener('click', () => {
+    sentPanel.hidden = true;
+    emailEntry.hidden = false;
+    ok.textContent = '';
+    err.textContent = '';
+    emailInput.focus();
+  });
+
+  document.getElementById('form').onsubmit = async (ev) => {
+    ev.preventDefault();
+    err.textContent = '';
+    ok.textContent = '';
+    const email = emailInput.value.trim();
+    if (!email) {
+      err.textContent = 'Enter your email address.';
+      emailInput.focus();
+      return;
+    }
+    sendBtn.disabled = true;
+    sendBtn.textContent = 'Sending…';
+    try {
+      const r = await fetch('/api/auth/magic-link', {
+        method: 'POST',
+        credentials: 'same-origin',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, callbackURL: '/account' })
+      });
+      const j = await r.json().catch(() => ({}));
+      if (!r.ok) {
+        err.textContent = j.error || 'Could not send the magic link.';
+        return;
+      }
+      emailEntry.hidden = true;
+      sentPanel.hidden = false;
+      ok.textContent = j.message || ('We sent a sign-in link to ' + email + '.');
+      if (sentSub) {
+        sentSub.textContent = 'The link expires in 10 minutes. Click it on this device to finish logging in.';
+      }
+    } catch {
+      err.textContent = 'Network error — could not contact the server.';
+    } finally {
+      sendBtn.disabled = (p.magic_link === false);
+      sendBtn.textContent = p.magic_link === false ? 'Magic link unavailable' : 'Send magic link';
+    }
+  };
+})();
+</script>
+</body>
+</html>

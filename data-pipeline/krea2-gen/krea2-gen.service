@@ -1,0 +1,19 @@
+[Unit]
+Description=Krea 2 sprite sheet generation
+After=default.target
+
+[Service]
+Type=simple
+# Example unit. Replace /path/to/krea2-gen with the checkout that contains start.sh.
+WorkingDirectory=/path/to/krea2-gen
+ExecStart=/path/to/krea2-gen/start.sh
+ExecStop=/path/to/krea2-gen/stop.sh
+Restart=on-failure
+RestartSec=15
+TimeoutStopSec=40
+KillMode=mixed
+StandardOutput=append:/path/to/krea2-gen/logs/service.log
+StandardError=append:/path/to/krea2-gen/logs/service.log
+
+[Install]
+WantedBy=default.target

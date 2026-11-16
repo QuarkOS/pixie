@@ -1,0 +1,20 @@
+[Unit]
+Description=Pixie v3 fast chat worker
+Documentation=file:///path/to/pixie
+After=network-online.target
+ConditionPathExists=!/path/to/pixie
+
+[Service]
+Type=simple
+WorkingDirectory=/path/to/pixie
+ExecStart=/path/to/pixie -u /path/to/pixie
+Restart=always
+RestartSec=5
+RestartPreventExitStatus=3
+TimeoutStopSec=20
+KillSignal=SIGTERM
+StandardOutput=append:/path/to/pixie
+StandardError=append:/path/to/pixie
+
+[Install]
+WantedBy=default.target

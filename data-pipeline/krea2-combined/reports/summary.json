@@ -1,0 +1,69 @@
+{
+ "root": "$DATA_ROOT",
+ "per_source": {
+  "3080ti": {
+   "sheets": 10000,
+   "raw_sprites": 90000,
+   "orig_run_usable": 33058,
+   "pass_extract_v2": 88997,
+   "purity_fail": 13,
+   "rejected_structure": 990,
+   "holdout_removed": 0,
+   "holdout_exact": 0,
+   "holdout_contains": 0,
+   "duplicates_removed": 0,
+   "final": 88997,
+   "final_edge_touch": 56357,
+   "unique_captions_final": 78043
+  },
+  "3060ti": {
+   "sheets": 1616,
+   "raw_sprites": 14544,
+   "orig_run_usable": 5522,
+   "pass_extract_v2": 14403,
+   "purity_fail": 1,
+   "rejected_structure": 140,
+   "holdout_removed": 0,
+   "holdout_exact": 0,
+   "holdout_contains": 0,
+   "duplicates_removed": 0,
+   "final": 14403,
+   "final_edge_touch": 8914,
+   "unique_captions_final": 14311
+  },
+  "5070ti": {
+   "sheets": 8820,
+   "raw_sprites": 35280,
+   "orig_run_usable": 33600,
+   "pass_extract_v2": 34613,
+   "purity_fail": 0,
+   "rejected_structure": 667,
+   "holdout_removed": 0,
+   "holdout_exact": 0,
+   "holdout_contains": 0,
+   "duplicates_removed": 3,
+   "final": 34610,
+   "final_edge_touch": 11916,
+   "unique_captions_final": 33555
+  }
+ },
+ "total": {
+  "sheets": 20436,
+  "raw_sprites": 139824,
+  "orig_run_usable": 72180,
+  "pass_extract_v2": 138013,
+  "purity_fail": 14,
+  "rejected_structure": 1797,
+  "holdout_removed": 0,
+  "holdout_exact": 0,
+  "holdout_contains": 0,
+  "duplicates_removed": 3,
+  "final": 138010,
+  "final_edge_touch": 77187,
+  "unique_captions_final": 89237
+ },
+ "holdout_phrases": 100,
+ "holdout_hits_by_phrase": {},
+ "dedup": "sha1 of 32x32 RGBA with RGB zeroed where alpha=0; among extract_v2 passes after holdout filter; first kept in order 3080ti,3060ti,5070ti then sheet,cell",
+ "holdout_rule": "normalized caption equals a Blind-50/Eval-50 phrase, or contains one as a whole-word sequence"
+}

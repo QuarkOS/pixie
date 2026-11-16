@@ -1,0 +1,449 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#000000">
+<meta name="color-scheme" content="dark">
+<title>Account — Pixie</title>
+<link rel="preload" href="fonts/inter-latin.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="chat.css?v=20261112s2">
+<style>
+  body.px-account {
+    margin: 0;
+    min-height: 100dvh;
+    background: var(--ground);
+    color: var(--text);
+    font: 400 var(--fs-body)/1.5 var(--font);
+    -webkit-font-smoothing: antialiased;
+    display: flex;
+    flex-direction: column;
+  }
+  .px-acct-main {
+    flex: 1;
+    width: 100%;
+    max-width: 720px;
+    margin: 0 auto;
+    padding: 32px var(--margin) 64px;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+  .px-acct-card {
+    background: var(--surface);
+    padding: 24px;
+    clip-path: var(--notch);
+  }
+  .px-acct-head {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    margin-bottom: 16px;
+  }
+  .px-acct-badge-box {
+    width: 48px;
+    height: 48px;
+    flex: 0 0 auto;
+    display: grid;
+    place-items: center;
+    background: var(--raised-2);
+    color: var(--accent);
+    clip-path: var(--notch-sm);
+    font-size: 20px;
+    font-weight: 600;
+  }
+  .px-acct-eyebrow {
+    display: block;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 3px;
+  }
+  .px-acct-title {
+    margin: 0;
+    font-size: var(--fs-title);
+    font-weight: 600;
+    letter-spacing: -0.02em;
+    line-height: 1.2;
+  }
+  .px-acct-loading {
+    margin: 0;
+    color: var(--muted);
+    font-size: var(--fs-ui);
+  }
+  .px-acct-kv {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 10px;
+    margin-bottom: 16px;
+  }
+  .px-acct-stat {
+    padding: 12px 14px;
+    background: var(--raised);
+    clip-path: var(--notch-sm);
+  }
+  .px-acct-stat-lbl {
+    display: block;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 4px;
+  }
+  .px-acct-stat-val {
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--text);
+    word-break: break-word;
+  }
+  .px-acct-pills {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-top: 6px;
+  }
+  .px-pill {
+    display: inline-flex;
+    align-items: center;
+    padding: 3px 8px;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.02em;
+    background: var(--raised-2);
+    color: var(--muted);
+    clip-path: var(--notch-sm);
+  }
+  .px-pill-accent {
+    background: rgba(182, 220, 60, 0.16);
+    color: var(--accent);
+  }
+  .px-pill-warn {
+    background: rgba(229, 169, 59, 0.16);
+    color: var(--warning);
+  }
+  .px-pill-bad {
+    background: rgba(229, 86, 111, 0.18);
+    color: var(--negative);
+  }
+  .px-acct-sec-title {
+    margin: 20px 0 8px;
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: var(--muted);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .px-lid-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    gap: 8px;
+  }
+  .px-lid-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    flex-wrap: wrap;
+    padding: 11px 14px;
+    background: var(--raised);
+    clip-path: var(--notch-sm);
+  }
+  .px-lid-code {
+    font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+    font-size: 13px;
+    color: var(--text);
+    word-break: break-all;
+  }
+  .px-attach-box {
+    margin-top: 16px;
+    padding: 16px;
+    background: var(--raised);
+    border-left: 3px solid var(--accent);
+    clip-path: var(--notch-sm);
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+  .px-attach-box p {
+    margin: 0;
+    font-size: var(--fs-ui);
+    color: var(--text);
+    line-height: 1.5;
+  }
+  .px-attach-box p .px-lid-code {
+    white-space: nowrap;
+    word-break: normal;
+  }
+  .px-acct-actions {
+    margin-top: 20px;
+    padding-top: 18px;
+    border-top: 1px solid var(--raised-2);
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    align-items: center;
+  }
+  .px-acct-link {
+    display: inline-flex;
+    align-items: center;
+    height: 40px;
+    padding: 0 16px;
+    background: var(--raised-2);
+    color: var(--text);
+    text-decoration: none;
+    font-size: 14px;
+    font-weight: 600;
+    clip-path: var(--notch-sm);
+    transition: background-color var(--t-fast), color var(--t-fast);
+  }
+  .px-acct-link:hover { background: var(--raised-3); text-decoration: none; }
+  .px-acct-link-primary {
+    background: var(--text);
+    color: var(--ground);
+  }
+  .px-acct-link-primary:hover { background: #e2e2e2; }
+  .px-acct-logout {
+    margin-left: auto;
+    height: 40px;
+    padding: 0 16px;
+    border: 0;
+    background: var(--raised-2);
+    color: var(--text);
+    font: inherit;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    clip-path: var(--notch-sm);
+    transition: background-color var(--t-fast), color var(--t-fast);
+  }
+  .px-acct-logout:hover {
+    background: rgba(229, 86, 111, 0.2);
+    color: var(--negative);
+  }
+  .px-acct-ok {
+    margin: 0;
+    padding: 12px 14px;
+    background: rgba(182, 220, 60, 0.14);
+    color: var(--accent);
+    font-size: 14px;
+    clip-path: var(--notch-sm);
+  }
+  .px-acct-ok:empty { display: none; }
+  .px-acct-main .px-error {
+    margin: 0;
+    min-height: 0;
+    padding: 12px 14px;
+    background: rgba(229, 86, 111, 0.14);
+    clip-path: var(--notch-sm);
+  }
+  .px-acct-main .px-error:empty { display: none; }
+  .px-acct-note {
+    margin: 14px 0 0;
+    font-size: var(--fs-small);
+    color: var(--faint);
+    line-height: 1.5;
+  }
+  @media (max-width: 520px) {
+    .px-acct-card { padding: 18px 16px; }
+    .px-acct-logout { margin-left: 0; width: 100%; }
+    .px-acct-link { flex: 1 1 auto; justify-content: center; }
+  }
+</style>
+</head>
+<body class="px-account">
+<svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
+  <symbol id="pxMark" viewBox="0 0 11 12" shape-rendering="crispEdges">
+    <path fill="currentColor" fill-rule="evenodd" d="M2 0h7v1h1v1h1v5h-1v1h-1v1H5v1H4v1H3v1H2V8H1V7H0V2h1V1h1zM3 2h2v2H3zM6 2h2v2H6zM3 5h2v2H3zM6 5h2v2H6z"/>
+    <rect x="6" y="2" width="2" height="2" style="fill:var(--accent)"/>
+  </symbol>
+</svg>
+
+<header class="px-header">
+  <div class="px-header-in">
+    <a class="px-brand" href="/" aria-label="Pixie sprite chat, home">
+      <svg class="px-mark" width="22" height="24" aria-hidden="true"><use href="#pxMark"/></svg>
+      <span class="px-brand-name">Pixie</span>
+      <span class="px-brand-sub">Account</span>
+    </a>
+    <nav class="px-nav" aria-label="Site" id="acctNav">
+      <a class="px-nav-link" href="/chat">Sprite chat</a>
+      <a class="px-nav-link" href="/label">Rate A/B</a>
+    </nav>
+  </div>
+</header>
+
+<main class="px-acct-main">
+  <section class="px-acct-card box" aria-labelledby="acctTitle">
+    <div class="px-acct-head">
+      <div class="px-acct-badge-box" id="acctAvatar" aria-hidden="true">
+        <svg class="px-mark" width="22" height="24"><use href="#pxMark"/></svg>
+      </div>
+      <div>
+        <span class="px-acct-eyebrow">Signed-in profile</span>
+        <h1 class="px-acct-title" id="acctTitle">Your Pixie account</h1>
+      </div>
+    </div>
+
+    <div id="body"><p class="px-acct-loading">Loading account details…</p></div>
+  </section>
+
+  <p class="err px-error" id="err" role="alert"></p>
+  <p class="ok px-acct-ok" id="ok"></p>
+</main>
+
+<script>
+(function(){
+  const LS = { tok:'pxl_token', name:'pxl_name', lid:'pxl_lid' };
+  const err = document.getElementById('err');
+  const ok = document.getElementById('ok');
+
+  function esc(s) {
+    return String(s ?? '').replace(/[&<>"']/g, (c) => ({ '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;', "'":'&#39;' }[c]));
+  }
+  function statusPillClass(status) {
+    const s = String(status || '').toLowerCase();
+    if (s === 'excluded' || s === 'suspended' || s === 'banned') return 'px-pill-bad';
+    if (s === 'flagged' || s === 'pending') return 'px-pill-warn';
+    if (s === 'active' || s === 'trusted' || s === 'owner') return 'px-pill-accent';
+    return '';
+  }
+  function setIdent(me){
+    if (!me.token) return;
+    try {
+      localStorage.setItem(LS.tok, me.token);
+      if (me.name) localStorage.setItem(LS.name, me.name);
+      if (me.labeler_id) localStorage.setItem(LS.lid, me.labeler_id);
+    } catch(e){}
+  }
+  function deviceToken(){ try { return localStorage.getItem(LS.tok) || ''; } catch(e){ return ''; } }
+  function deviceLid(){ try { return localStorage.getItem(LS.lid) || ''; } catch(e){ return ''; } }
+
+  async function load(){
+    err.textContent = '';
+    const r = await fetch('/api/auth/me', { credentials:'same-origin' }).catch(() => null);
+    if (!r || r.status === 401) { if (r) await r.text().catch(() => {}); location.replace('/login'); return; }
+    const me = await r.json().catch(() => null);
+    if (!me || me.ok === false || !me.email) { location.replace('/login'); return; }
+
+    const prevTok = deviceToken();
+    const prevLid = deviceLid();
+    const lidList = Array.isArray(me.lids) ? me.lids : [];
+    const already = lidList.some((l) => l.lid === prevLid);
+    const canAttach = Boolean(prevLid && prevTok && !already);
+    if (!canAttach) setIdent(me);
+
+    const avatarEl = document.getElementById('acctAvatar');
+    const titleEl = document.getElementById('acctTitle');
+    const acctNav = document.getElementById('acctNav');
+    const displayName = me.name || me.email;
+    if (avatarEl && displayName) avatarEl.textContent = displayName.trim().slice(0, 1).toUpperCase();
+    if (titleEl && me.name) titleEl.textContent = me.name;
+    if (acctNav && me.is_admin && !acctNav.querySelector('[href="/admin"]')) {
+      const adm = document.createElement('a');
+      adm.className = 'px-nav-link';
+      adm.href = '/admin';
+      adm.textContent = 'Admin';
+      acctNav.appendChild(adm);
+    }
+
+    const lidsHtml = lidList.length
+      ? `<ul class="px-lid-list">${lidList.map((l) => `
+          <li class="px-lid-item">
+            <code class="px-lid-code">${esc(l.lid)}</code>
+            <div class="px-acct-pills" style="margin-top:0">
+              <span class="px-pill ${l.primary ? 'px-pill-accent' : ''}">${l.primary ? 'Primary' : 'Linked'}</span>
+              <span class="px-pill ${statusPillClass(l.status)}">${esc(l.status || 'auto')}</span>
+              ${l.source ? `<span class="px-pill">${esc(l.source)}</span>` : ''}
+            </div>
+          </li>`).join('')}</ul>`
+      : `<p class="px-acct-note" style="margin-top:0">No labeller identities are linked yet. Rate sprites or start a chat prompt to create one.</p>`;
+
+    const devLid = prevLid;
+
+    document.getElementById('body').innerHTML = `
+      <div class="px-acct-kv">
+        <div class="px-acct-stat">
+          <span class="px-acct-stat-lbl">Email</span>
+          <div class="px-acct-stat-val">${esc(me.email)}</div>
+        </div>
+        <div class="px-acct-stat">
+          <span class="px-acct-stat-lbl">Display name</span>
+          <div class="px-acct-stat-val">${esc(me.name || 'Not set')}</div>
+          <div class="px-acct-pills">
+            <span class="px-pill ${statusPillClass(me.status)}">${esc(me.status || 'active')}</span>
+            ${me.is_admin ? '<span class="px-pill px-pill-accent">Admin</span>' : ''}
+          </div>
+        </div>
+      </div>
+
+      <div class="px-acct-sec-title">
+        <span>Linked labeller identities</span>
+        <span>${lidList.length} ${lidList.length === 1 ? 'identity' : 'identities'}</span>
+      </div>
+      ${lidsHtml}
+
+      ${canAttach ? `
+        <div class="px-attach-box">
+          <p>This browser has an unlinked labeller ID (<code class="px-lid-code">${esc(devLid)}</code>). Attach it to move votes and edits from this device into your account.</p>
+          <div><button type="button" class="px-btn px-btn-primary" id="attach">Attach votes from this browser</button></div>
+        </div>` : ''}
+
+      <div class="px-acct-actions">
+        <a class="px-acct-link px-acct-link-primary" href="/chat">Open Sprite chat</a>
+        <a class="px-acct-link" href="/label">Rate A/B sprites</a>
+        ${me.is_admin ? '<a class="px-acct-link" href="/admin">Admin dashboard</a>' : ''}
+        <button type="button" class="px-acct-logout" id="logout">Log out</button>
+      </div>
+      <p class="px-acct-note">Account profile details come directly from your sign-in provider and linked labeller tokens.</p>
+    `;
+
+    if (canAttach) {
+      document.getElementById('attach').onclick = async () => {
+        err.textContent = '';
+        ok.textContent = '';
+        const btn = document.getElementById('attach');
+        btn.disabled = true;
+        btn.textContent = 'Attaching…';
+        try {
+          const res = await fetch('/api/auth/attach', {
+            method: 'POST',
+            credentials: 'same-origin',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ token: prevTok })
+          });
+          const j = await res.json().catch(() => ({}));
+          if (!res.ok) {
+            err.textContent = j.error || 'Could not attach browser identity.';
+            btn.disabled = false;
+            btn.textContent = 'Attach votes from this browser';
+            return;
+          }
+          setIdent(me);
+          ok.textContent = 'Attached! Votes from this browser now belong to your account.';
+          await load();
+        } catch {
+          err.textContent = 'Network error while attaching identity.';
+          btn.disabled = false;
+          btn.textContent = 'Attach votes from this browser';
+        }
+      };
+    }
+
+    document.getElementById('logout').onclick = async () => {
+      await fetch('/api/auth/logout', { method:'POST', credentials:'same-origin' }).catch(() => {});
+      location.replace('/login');
+    };
+  }
+  load();
+})();
+</script>
+</body>
+</html>

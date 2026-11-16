@@ -1,0 +1,11 @@
+# musubi-tuner dataset config. Fill image_directory and cache_directory below.
+[general]
+resolution = [512, 512]
+caption_extension = ".txt"
+batch_size = 1
+enable_bucket = false
+
+[[datasets]]
+image_directory = "/path/to/pixie"
+cache_directory = "/path/to/pixie"
+num_repeats = 1
