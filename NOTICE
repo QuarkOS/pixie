@@ -21,9 +21,9 @@ distributed with this repository or with the Pixie model files. The Krea
 sheet-generation scripts under data-pipeline/ load Krea 2 weights that you
 download yourself under Krea's own license.
 
-The 16x16 training corpus (also the P32 warm start), Angais/pixel-art-atlas-1.4m
+The pixie-16 (16x16) training corpus, Angais/pixel-art-atlas-1.4m
 (https://huggingface.co/datasets/Angais/pixel-art-atlas-1.4m, CC0-1.0), was
-also generated with Krea 2 Turbo.
+also generated with Krea 2 Turbo. It was not used to train pixie-32.
 
 -------------------------------------------------------------------------------
 Third-party components that are not redistributed here

@@ -27,9 +27,8 @@ in [NOTICE](NOTICE). Files in each Hugging Face repo: `model.safetensors`,
 
 | Field | Value |
 | --- | --- |
-| Warm start | Initialised from the 16×16 Pixie v3 model, which was trained on about 1.4M CC0-1.0 rows of [Angais/pixel-art-atlas-1.4m](https://huggingface.co/datasets/Angais/pixel-art-atlas-1.4m) (synthetic 16×16 sprites). Shape-compatible tensors were copied and the position tables expanded. |
-| P32 training set | About 130k native 32×32 sprites generated for this project with Krea 2 Turbo plus a pixel-art LoRA, cut from 3×3 sheets by `data-pipeline/extract_v2.py`. Not released. |
-| License of the data | The atlas is CC0-1.0. The generated sprites are Krea 2 Outputs, owned by their generator per section 5.3 of the [Krea 2 Community License](https://github.com/krea-ai/krea-2/blob/main/docs/KREA-2-COMMUNITY-LICENSE). See [NOTICE](NOTICE). |
+| Training set | About 130k native 32×32 sprites generated for this project with Krea 2 Turbo plus a pixel-art LoRA, cut from 3×3 sheets by `data-pipeline/extract_v2.py`. Not released. |
+| License of the data | The generated sprites are Krea 2 Outputs, owned by their generator per section 5.3 of the [Krea 2 Community License](https://github.com/krea-ai/krea-2/blob/main/docs/KREA-2-COMMUNITY-LICENSE). See [NOTICE](NOTICE). |
 | Holdouts excluded | The Blind-50 and Eval-50 phrase lists were excluded from training by the builder's frozen-holdout check. The lists themselves are not published. |
 | Personal data | None in the weights files. Captions are the generation prompts. |
 
